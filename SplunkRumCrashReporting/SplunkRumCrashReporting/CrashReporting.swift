@@ -22,34 +22,34 @@ import OpenTelemetryApi
 
 var TheCrashReporter: PLCrashReporter?
 
-// FIXME debugLog
-
 func initializeCrashReporting() {
     let config = PLCrashReporterConfig(signalHandlerType: .BSD, symbolicationStrategy: PLCrashReporterSymbolicationStrategy(rawValue: 0) /* none */)
     let crashReporter_ = PLCrashReporter(configuration: config)
     if crashReporter_ == nil {
-        // debug_log("Cannot enable PLCrashReporter")
+        SplunkRum.debugLog("Cannot enable PLCrashReporter")
         return
     }
     let crashReporter = crashReporter_!
     let success = crashReporter.enable()
-    // debug_log("PLCrashReporter enabled: "+success.description)
+    SplunkRum.debugLog("PLCrashReporter enabled: "+success.description)
     if !success {
         return
     }
     TheCrashReporter = crashReporter
     updateCrashReportSessionId()
-    // FIXME add feature to listen for sessionID change callbacks to SplunkRum, use here
+    SplunkRum.addSessionIdChangeCallback {
+        updateCrashReportSessionId()
+    }
     // Now for the pending report if there is one
     if !crashReporter.hasPendingCrashReport() {
         return
     }
-    // debug_log("Had a pending crash report")
+    SplunkRum.debugLog("Had a pending crash report")
     do {
         let data = crashReporter.loadPendingCrashReportData()
         try loadPendingCrashReport(data)
     } catch {
-        // debug_log("Error loading crash report: \(error)")
+        SplunkRum.debugLog("Error loading crash report: \(error)")
     }
     crashReporter.purgePendingCrashReport()
 }
@@ -61,7 +61,7 @@ func updateCrashReportSessionId() {
 }
 
 func loadPendingCrashReport(_ data: Data!) throws {
-    // debug_log("Loading crash report of size \(data?.count as Any)")
+    SplunkRum.debugLog("Loading crash report of size \(data?.count as Any)")
     let report = try PLCrashReport(data: data)
     let oldSessionId = String(decoding: report.customData, as: UTF8.self)
     // Turn the report into a span
