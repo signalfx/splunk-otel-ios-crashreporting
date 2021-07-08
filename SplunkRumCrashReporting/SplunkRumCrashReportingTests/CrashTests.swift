@@ -52,7 +52,6 @@ class CrashTests: XCTestCase {
         SplunkRumCrashReporting.start()
         try loadPendingCrashReport(crashData)
 
-        // FIXME port over testing helpers and validate data
         XCTAssertEqual(localSpans.count, 1)
         let crashReport = localSpans[0]
         XCTAssertEqual(crashReport.name, "crash.report")
