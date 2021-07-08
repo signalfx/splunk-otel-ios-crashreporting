@@ -18,7 +18,7 @@ either through the Xcode menu
 .target(name: "MyAwesomeApp", dependencies: ["SplunkRum", "SplunkRumCrashReporting]),
 ```
 
-You'll then need to initialize the crash reporting **after** initializing the 
+You'll then need to start the crash reporting **after** initializing the 
 SplunkRum library:
 
 
@@ -28,7 +28,7 @@ import SplunkRumCrashReporting
 ...
 // Your beaconUrl and rumAuth will be provided by your friendly Splunk representative
 SplunkRum.initialize(beaconUrl: "https://rum-ingest.us0.signalfx.com/v1/rum", rumAuth: "ABCD...")
-SplunkRumCrashReporting.initialize()
+SplunkRumCrashReporting.start()
 ```
 
 or
@@ -39,7 +39,7 @@ or
 ...
 // Your beaconUrl and rumAuth will be provided by your friendly Splunk representative
 [SplunkRum initializeWithBeaconUrl: @"https://rum-ingest.us0.signalfx.com/v1/rum" rumAuth: @"ABCD..." options: nil];
-[SplunkRumCrashReporting initialize]
+[SplunkRumCrashReporting start]
 ```
 
 ## Version information
