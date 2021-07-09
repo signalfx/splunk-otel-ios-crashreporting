@@ -20,6 +20,8 @@ import CrashReporter
 import SplunkRum
 import OpenTelemetryApi
 
+let CrashReportingVersionString = "0.1.1"
+
 var TheCrashReporter: PLCrashReporter?
 
 func initializeCrashReporting() {
@@ -65,8 +67,7 @@ func loadPendingCrashReport(_ data: Data!) throws {
     let report = try PLCrashReport(data: data)
     let oldSessionId = String(decoding: report.customData, as: UTF8.self)
     // Turn the report into a span
-    // FIXME proper version string here
-    let tracer = OpenTelemetry.instance.tracerProvider.get(instrumentationName: "splunk-ios-crashreporting", instrumentationVersion: "0.1.0")
+    let tracer = OpenTelemetry.instance.tracerProvider.get(instrumentationName: "splunk-ios-crashreporting", instrumentationVersion: CrashReportingVersionString)
     let now = Date()
     let span = tracer.spanBuilder(spanName: "crash.report").setStartTime(time: now).setNoParent().startSpan()
     span.setAttribute(key: "component", value: "error")
