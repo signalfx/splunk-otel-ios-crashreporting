@@ -13,6 +13,7 @@ either through the Xcode menu
 `File -> Swift Packages -> Add Package Dependency` or through your `Package.swift`:
 
 ```swift
+.package(url: "https://github.com/signalfx/splunk-otel-ios/", from: "0.1.1");
 .package(url: "https://github.com/signalfx/splunk-otel-ios-crashreporting/", from: "0.1");
 ...
 .target(name: "MyAwesomeApp", dependencies: ["SplunkRum", "SplunkRumCrashReporting]),
