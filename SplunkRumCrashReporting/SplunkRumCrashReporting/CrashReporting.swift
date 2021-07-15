@@ -25,16 +25,23 @@ let CrashReportingVersionString = "0.1.1"
 var TheCrashReporter: PLCrashReporter?
 
 func initializeCrashReporting() {
+    let startupSpan = buildTracer().spanBuilder(spanName: "SplunkRumCrashReporting").startSpan()
+    startupSpan.setAttribute(key: "component", value: "appstart")
+    defer {
+        startupSpan.end()
+    }
     let config = PLCrashReporterConfig(signalHandlerType: .BSD, symbolicationStrategy: PLCrashReporterSymbolicationStrategy(rawValue: 0) /* none */)
     let crashReporter_ = PLCrashReporter(configuration: config)
     if crashReporter_ == nil {
-        SplunkRum.debugLog("Cannot enable PLCrashReporter")
+        startupSpan.setAttribute(key: "error.message", value: "Cannot construct PLCrashReporter")
+        SplunkRum.debugLog("Cannot construct PLCrashReporter")
         return
     }
     let crashReporter = crashReporter_!
     let success = crashReporter.enable()
     SplunkRum.debugLog("PLCrashReporter enabled: "+success.description)
     if !success {
+        startupSpan.setAttribute(key: "error.message", value: "Cannot enable PLCrashReporter")
         return
     }
     TheCrashReporter = crashReporter
@@ -52,8 +59,15 @@ func initializeCrashReporting() {
         try loadPendingCrashReport(data)
     } catch {
         SplunkRum.debugLog("Error loading crash report: \(error)")
+        startupSpan.setAttribute(key: "error.message", value: "Cannot load crash report")
+        // yes, fall through to purge
     }
     crashReporter.purgePendingCrashReport()
+
+}
+private func buildTracer() -> Tracer {
+    return OpenTelemetry.instance.tracerProvider.get(instrumentationName: "splunk-ios-crashreporting", instrumentationVersion: CrashReportingVersionString)
+
 }
 
 func updateCrashReportSessionId() {
@@ -67,9 +81,8 @@ func loadPendingCrashReport(_ data: Data!) throws {
     let report = try PLCrashReport(data: data)
     let oldSessionId = String(decoding: report.customData, as: UTF8.self)
     // Turn the report into a span
-    let tracer = OpenTelemetry.instance.tracerProvider.get(instrumentationName: "splunk-ios-crashreporting", instrumentationVersion: CrashReportingVersionString)
     let now = Date()
-    let span = tracer.spanBuilder(spanName: "crash.report").setStartTime(time: now).setNoParent().startSpan()
+    let span = buildTracer().spanBuilder(spanName: "crash.report").setStartTime(time: now).setNoParent().startSpan()
     span.setAttribute(key: "component", value: "error")
     span.setAttribute(key: "crash.rumSessionId", value: oldSessionId)
     // "marketing version" here matches up to our use of CFBundleShortVersionString

@@ -52,15 +52,25 @@ class CrashTests: XCTestCase {
         SplunkRumCrashReporting.start()
         try loadPendingCrashReport(crashData)
 
-        XCTAssertEqual(localSpans.count, 1)
-        let crashReport = localSpans[0]
-        XCTAssertEqual(crashReport.name, "crash.report")
-        XCTAssertNotEqual(crashReport.attributes["splunk.rumSessionId"], crashReport.attributes["crash.rumSessionId"])
-        XCTAssertEqual(crashReport.attributes["crash.rumSessionId"]?.description, "355ecc42c29cf0b56c411f1eab9191d0")
-        XCTAssertEqual(crashReport.attributes["crash.address"]?.description, "140733995048756")
-        XCTAssertEqual(crashReport.attributes["component"]?.description, "error")
-        XCTAssertEqual(crashReport.attributes["error"]?.description, "true")
-        XCTAssertEqual(crashReport.attributes["exception.type"]?.description, "SIGILL")
-        XCTAssertTrue(crashReport.attributes["exception.stacktrace"]?.description.contains("UIKitCore") ?? false)
+        XCTAssertEqual(localSpans.count, 2)
+        let crashReport = localSpans.first(where: { (span) -> Bool in
+            return span.name == "crash.report"
+        })
+        let startup = localSpans.first(where: { (span) -> Bool in
+            return span.name == "SplunkRumCrashReporting"
+        })
+
+        XCTAssertNotNil(crashReport)
+        XCTAssertNotEqual(crashReport!.attributes["splunk.rumSessionId"], crashReport!.attributes["crash.rumSessionId"])
+        XCTAssertEqual(crashReport!.attributes["crash.rumSessionId"]?.description, "355ecc42c29cf0b56c411f1eab9191d0")
+        XCTAssertEqual(crashReport!.attributes["crash.address"]?.description, "140733995048756")
+        XCTAssertEqual(crashReport!.attributes["component"]?.description, "error")
+        XCTAssertEqual(crashReport!.attributes["error"]?.description, "true")
+        XCTAssertEqual(crashReport!.attributes["exception.type"]?.description, "SIGILL")
+        XCTAssertTrue(crashReport!.attributes["exception.stacktrace"]?.description.contains("UIKitCore") ?? false)
+
+        XCTAssertNotNil(startup)
+        XCTAssertEqual(startup!.attributes["component"]?.description, "appstart")
+
     }
 }
