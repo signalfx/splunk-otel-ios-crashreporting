@@ -14,7 +14,7 @@ either through the Xcode menu
 
 ```swift
 .package(url: "https://github.com/signalfx/splunk-otel-ios/", from: "0.1.1");
-.package(url: "https://github.com/signalfx/splunk-otel-ios-crashreporting/", from: "0.1");
+.package(url: "https://github.com/signalfx/splunk-otel-ios-crashreporting/", from: "0.1.1");
 ...
 .target(name: "MyAwesomeApp", dependencies: ["SplunkRum", "SplunkRumCrashReporting]),
 ```
