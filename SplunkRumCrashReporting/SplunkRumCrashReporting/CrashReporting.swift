@@ -20,7 +20,7 @@ import CrashReporter
 import SplunkRum
 import OpenTelemetryApi
 
-let CrashReportingVersionString = "0.1.1"
+let CrashReportingVersionString = "0.1.2"
 
 var TheCrashReporter: PLCrashReporter?
 
@@ -79,17 +79,22 @@ func updateCrashReportSessionId() {
 func loadPendingCrashReport(_ data: Data!) throws {
     SplunkRum.debugLog("Loading crash report of size \(data?.count as Any)")
     let report = try PLCrashReport(data: data)
+    var exceptionType = report.signalInfo.name
+    if report.hasExceptionInfo {
+        exceptionType = report.exceptionInfo.exceptionName
+    }
+
     let oldSessionId = String(decoding: report.customData, as: UTF8.self)
     // Turn the report into a span
     let now = Date()
-    let span = buildTracer().spanBuilder(spanName: "crash.report").setStartTime(time: now).setNoParent().startSpan()
-    span.setAttribute(key: "component", value: "error")
+    let span = buildTracer().spanBuilder(spanName: exceptionType ?? "unknown").setStartTime(time: now).setNoParent().startSpan()
+    span.setAttribute(key: "component", value: "crash")
     span.setAttribute(key: "crash.rumSessionId", value: oldSessionId)
     // "marketing version" here matches up to our use of CFBundleShortVersionString
     span.setAttribute(key: "crash.app.version", value: report.applicationInfo.applicationMarketingVersion)
     span.setAttribute(key: "error", value: true)
     span.addEvent(name: "crash.timestamp", timestamp: report.systemInfo.timestamp)
-    span.setAttribute(key: "exception.type", value: report.signalInfo.name)
+    span.setAttribute(key: "exception.type", value: exceptionType ?? "unknown")
     span.setAttribute(key: "crash.address", value: report.signalInfo.address.description)
     for case let thread as PLCrashReportThreadInfo in report.threads where thread.crashed {
         span.setAttribute(key: "exception.stacktrace", value: crashedThreadToStack(report: report, thread: thread))

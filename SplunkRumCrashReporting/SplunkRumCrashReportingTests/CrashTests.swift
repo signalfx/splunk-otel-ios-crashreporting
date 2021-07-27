@@ -54,7 +54,7 @@ class CrashTests: XCTestCase {
 
         XCTAssertEqual(localSpans.count, 2)
         let crashReport = localSpans.first(where: { (span) -> Bool in
-            return span.name == "crash.report"
+            return span.name == "SIGILL"
         })
         let startup = localSpans.first(where: { (span) -> Bool in
             return span.name == "SplunkRumCrashReporting"
@@ -64,7 +64,7 @@ class CrashTests: XCTestCase {
         XCTAssertNotEqual(crashReport!.attributes["splunk.rumSessionId"], crashReport!.attributes["crash.rumSessionId"])
         XCTAssertEqual(crashReport!.attributes["crash.rumSessionId"]?.description, "355ecc42c29cf0b56c411f1eab9191d0")
         XCTAssertEqual(crashReport!.attributes["crash.address"]?.description, "140733995048756")
-        XCTAssertEqual(crashReport!.attributes["component"]?.description, "error")
+        XCTAssertEqual(crashReport!.attributes["component"]?.description, "crash")
         XCTAssertEqual(crashReport!.attributes["error"]?.description, "true")
         XCTAssertEqual(crashReport!.attributes["exception.type"]?.description, "SIGILL")
         XCTAssertTrue(crashReport!.attributes["exception.stacktrace"]?.description.contains("UIKitCore") ?? false)
