@@ -12,8 +12,8 @@ let package = Package(
         .library(name: "SplunkRumCrashReporting", targets: ["SplunkRumCrashReporting"])
     ],
     dependencies: [
-        .package(name: "SplunkRum", url:"https://github.com/signalfx/splunk-otel-ios", .exact("0.1.1")),
-        .package(name: "PLCrashReporter", url:"https://github.com/microsoft/plcrashreporter", .exact("1.9.0"))
+        .package(name: "SplunkRum", url:"https://github.com/signalfx/splunk-otel-ios", from: "0.2.0"),
+        .package(name: "PLCrashReporter", url:"https://github.com/microsoft/plcrashreporter", from: "1.8.0")
     ],
     targets: [
         .target(

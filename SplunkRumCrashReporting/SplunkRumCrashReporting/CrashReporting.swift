@@ -20,7 +20,7 @@ import CrashReporter
 import SplunkRum
 import OpenTelemetryApi
 
-let CrashReportingVersionString = "0.1.2"
+let CrashReportingVersionString = "0.2.0"
 
 var TheCrashReporter: PLCrashReporter?
 
