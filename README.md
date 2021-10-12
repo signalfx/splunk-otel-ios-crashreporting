@@ -7,16 +7,16 @@ that adds crash reporting via [PLCrashReporter](https://github.com/microsoft/plc
 
 ## Getting Started
 
-To get started, first follow the instructions to add the SplunkRum package
+To get started, first follow the instructions to add the SplunkOtel package
 to your application, then import this optional crash reporting package into your app, 
 either through the Xcode menu
 `File -> Swift Packages -> Add Package Dependency` or through your `Package.swift`:
 
 ```swift
-.package(url: "https://github.com/signalfx/splunk-otel-ios/", from: "0.1.2");
-.package(url: "https://github.com/signalfx/splunk-otel-ios-crashreporting/", from: "0.1.2");
+.package(url: "https://github.com/signalfx/splunk-otel-ios/", from: "0.4.0");
+.package(url: "https://github.com/signalfx/splunk-otel-ios-crashreporting/", from: "0.4.0");
 ...
-.target(name: "MyAwesomeApp", dependencies: ["SplunkRum", "SplunkRumCrashReporting]),
+.target(name: "MyAwesomeApp", dependencies: ["SplunkOtel", "SplunkOtelCrashReporting]),
 ```
 
 You'll then need to start the crash reporting **after** initializing the 
@@ -24,8 +24,8 @@ SplunkRum library:
 
 
 ```swift
-import SplunkRum
-import SplunkRumCrashReporting
+import SplunkOtel
+import SplunkOtelCrashReporting
 ...
 // Your beaconUrl and rumAuth will be provided by your friendly Splunk representative
 SplunkRum.initialize(beaconUrl: "https://rum-ingest.us0.signalfx.com/v1/rum", rumAuth: "ABCD...")
@@ -35,8 +35,8 @@ SplunkRumCrashReporting.start()
 or
 
 ```objectivec
-@import SplunkRum;
-@import SplunkRumCrashReporting;
+@import SplunkOtel;
+@import SplunkOtelCrashReporting;
 ...
 // Your beaconUrl and rumAuth will be provided by your friendly Splunk representative
 [SplunkRum initializeWithBeaconUrl: @"https://rum-ingest.us0.signalfx.com/v1/rum" rumAuth: @"ABCD..." options: nil];

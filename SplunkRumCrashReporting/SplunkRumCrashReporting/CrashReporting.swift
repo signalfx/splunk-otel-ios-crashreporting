@@ -17,7 +17,7 @@ limitations under the License.
 
 import Foundation
 import CrashReporter
-import SplunkRum
+import SplunkOtel
 import OpenTelemetryApi
 
 let CrashReportingVersionString = "0.2.0"

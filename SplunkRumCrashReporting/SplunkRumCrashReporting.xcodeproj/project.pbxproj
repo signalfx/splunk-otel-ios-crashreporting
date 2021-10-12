@@ -12,8 +12,8 @@
 		86461EEB26972906007C6DC0 /* SplunkRumCrashReporting.h in Headers */ = {isa = PBXBuildFile; fileRef = 86461EDD26972906007C6DC0 /* SplunkRumCrashReporting.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		86461EF726972964007C6DC0 /* CrashReporting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86461EF626972964007C6DC0 /* CrashReporting.swift */; };
 		86461EFC269729C0007C6DC0 /* CrashReporter in Frameworks */ = {isa = PBXBuildFile; productRef = 86461EFB269729C0007C6DC0 /* CrashReporter */; };
-		86461F0126972A07007C6DC0 /* SplunkRum in Frameworks */ = {isa = PBXBuildFile; productRef = 86461F0026972A07007C6DC0 /* SplunkRum */; };
 		86461F0526972A11007C6DC0 /* sample.plcrash in Resources */ = {isa = PBXBuildFile; fileRef = 86461F0426972A11007C6DC0 /* sample.plcrash */; };
+		86D3180A271655B300B43379 /* SplunkOtel in Frameworks */ = {isa = PBXBuildFile; productRef = 86D31809271655B300B43379 /* SplunkOtel */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,8 +42,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				86461F0126972A07007C6DC0 /* SplunkRum in Frameworks */,
 				86461EFC269729C0007C6DC0 /* CrashReporter in Frameworks */,
+				86D3180A271655B300B43379 /* SplunkOtel in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -126,7 +126,7 @@
 			name = SplunkRumCrashReporting;
 			packageProductDependencies = (
 				86461EFB269729C0007C6DC0 /* CrashReporter */,
-				86461F0026972A07007C6DC0 /* SplunkRum */,
+				86D31809271655B300B43379 /* SplunkOtel */,
 			);
 			productName = SplunkRumCrashReporting;
 			productReference = 86461EDA26972906007C6DC0 /* SplunkRumCrashReporting.framework */;
@@ -179,7 +179,7 @@
 			mainGroup = 86461ED026972906007C6DC0;
 			packageReferences = (
 				86461EFA269729C0007C6DC0 /* XCRemoteSwiftPackageReference "plcrashreporter" */,
-				86461EFF26972A07007C6DC0 /* XCRemoteSwiftPackageReference "splunk-otel-ios" */,
+				86D31808271655B300B43379 /* XCRemoteSwiftPackageReference "splunk-otel-ios" */,
 			);
 			productRefGroup = 86461EDB26972906007C6DC0 /* Products */;
 			projectDirPath = "";
@@ -513,12 +513,12 @@
 				version = 1.9.0;
 			};
 		};
-		86461EFF26972A07007C6DC0 /* XCRemoteSwiftPackageReference "splunk-otel-ios" */ = {
+		86D31808271655B300B43379 /* XCRemoteSwiftPackageReference "splunk-otel-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/signalfx/splunk-otel-ios";
 			requirement = {
-				kind = exactVersion;
-				version = 0.1.1;
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.4.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -529,10 +529,10 @@
 			package = 86461EFA269729C0007C6DC0 /* XCRemoteSwiftPackageReference "plcrashreporter" */;
 			productName = CrashReporter;
 		};
-		86461F0026972A07007C6DC0 /* SplunkRum */ = {
+		86D31809271655B300B43379 /* SplunkOtel */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 86461EFF26972A07007C6DC0 /* XCRemoteSwiftPackageReference "splunk-otel-ios" */;
-			productName = SplunkRum;
+			package = 86D31808271655B300B43379 /* XCRemoteSwiftPackageReference "splunk-otel-ios" */;
+			productName = SplunkOtel;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

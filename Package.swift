@@ -3,24 +3,24 @@
 import PackageDescription
 
 let package = Package(
-    name: "SplunkRumCrashReporting",
+    name: "SplunkOtelCrashReporting",
     platforms: [
         .iOS(.v11),
 	.macOS(.v10_13)
     ],
     products: [
-        .library(name: "SplunkRumCrashReporting", targets: ["SplunkRumCrashReporting"])
+        .library(name: "SplunkOtelCrashReporting", targets: ["SplunkOtelCrashReporting"])
     ],
     dependencies: [
-        .package(name: "SplunkRum", url:"https://github.com/signalfx/splunk-otel-ios", from: "0.2.0"),
+        .package(name: "SplunkOtel", url:"https://github.com/signalfx/splunk-otel-ios", from: "0.4.0"),
         .package(name: "PLCrashReporter", url:"https://github.com/microsoft/plcrashreporter", from: "1.8.0")
     ],
     targets: [
         .target(
-            name: "SplunkRumCrashReporting",
+            name: "SplunkOtelCrashReporting",
             dependencies: [
                 .product(name: "CrashReporter", package: "PLCrashReporter"),
-		.product(name: "SplunkRum", package: "SplunkRum")
+		.product(name: "SplunkOtel", package: "SplunkOtel")
             ],
 	    path: "SplunkRumCrashReporting",
 	    exclude: [ 
