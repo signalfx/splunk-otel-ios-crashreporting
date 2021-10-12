@@ -15,8 +15,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+// Why not "import SplunkOtelCrashReporting"?  Because this is linked as a local library and not as a swift package
+// FIXME align the library name, file structure, etc. with the new swift package name
 @testable import SplunkRumCrashReporting
-import SplunkRum
+import SplunkOtel
 import Foundation
 import XCTest
 import OpenTelemetryApi
