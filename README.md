@@ -3,7 +3,7 @@
 This is an addon to the [Splunk RUM iOS agent](https://github.com/signalfx/splunk-otel-ios)
 that adds crash reporting via [PLCrashReporter](https://github.com/microsoft/plcrashreporter).
 
-> :construction: This project is currently in **BETA**.
+> :construction: This project is currently in **BETA**. It is **officially supported** by Splunk. However, breaking changes **MAY** be introduced.
 
 ## Getting Started
 
