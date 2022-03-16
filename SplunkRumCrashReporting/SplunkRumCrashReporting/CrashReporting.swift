@@ -49,6 +49,10 @@ func initializeCrashReporting() {
     SplunkRum.addSessionIdChangeCallback {
         updateCrashReportSessionId()
     }
+    updateCrashReportScreenName()
+    SplunkRum.addScreenNameChangeCallback {
+        updateCrashReportScreenName()
+    }
     // Now for the pending report if there is one
     if !crashReporter.hasPendingCrashReport() {
         return
@@ -72,10 +76,16 @@ private func buildTracer() -> Tracer {
 
 func updateCrashReportSessionId() {
     DispatchQueue.main.async {
-        TheCrashReporter?.customData = SplunkRum.getSessionId().data(using: .utf8)
+        let str = SplunkRum.getSessionId() + "|" + SplunkRum.getCurrentScreenName()
+        TheCrashReporter?.customData = str.data(using: .utf8)
     }
 }
-
+func updateCrashReportScreenName() {
+    DispatchQueue.main.async {
+        let str = SplunkRum.getSessionId() + "|" + SplunkRum.getCurrentScreenName()
+        TheCrashReporter?.customData = str.data(using: .utf8)
+    }
+}
 func loadPendingCrashReport(_ data: Data!) throws {
     SplunkRum.debugLog("Loading crash report of size \(data?.count as Any)")
     let report = try PLCrashReport(data: data)
@@ -84,7 +94,9 @@ func loadPendingCrashReport(_ data: Data!) throws {
         exceptionType = report.exceptionInfo.exceptionName
     }
 
-    let oldSessionId = String(decoding: report.customData, as: UTF8.self)
+    let strArr = String(decoding: report.customData, as: UTF8.self).components(separatedBy: "|")
+    let oldSessionId = strArr[0]
+    let screenName = strArr[1]
     // Turn the report into a span
     let now = Date()
     let span = buildTracer().spanBuilder(spanName: exceptionType ?? "unknown").setStartTime(time: now).setNoParent().startSpan()
@@ -96,6 +108,7 @@ func loadPendingCrashReport(_ data: Data!) throws {
     span.addEvent(name: "crash.timestamp", timestamp: report.systemInfo.timestamp)
     span.setAttribute(key: "exception.type", value: exceptionType ?? "unknown")
     span.setAttribute(key: "crash.address", value: report.signalInfo.address.description)
+    span.setAttribute(key: "screen.name", value: screenName)
     for case let thread as PLCrashReportThreadInfo in report.threads where thread.crashed {
         span.setAttribute(key: "exception.stacktrace", value: crashedThreadToStack(report: report, thread: thread))
         break
