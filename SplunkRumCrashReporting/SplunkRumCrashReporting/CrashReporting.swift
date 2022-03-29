@@ -84,7 +84,7 @@ func loadPendingCrashReport(_ data: Data!) throws {
         exceptionType = report.exceptionInfo.exceptionName
     }
 
-    let oldSessionId = String(decoding: report.customData, as: UTF8.self)
+    let oldSessionId = String(decoding: SplunkRum.getSessionId().data(using: .utf8)!, as: UTF8.self)
     // Turn the report into a span
     let now = Date()
     let span = buildTracer().spanBuilder(spanName: exceptionType ?? "unknown").setStartTime(time: now).setNoParent().startSpan()
