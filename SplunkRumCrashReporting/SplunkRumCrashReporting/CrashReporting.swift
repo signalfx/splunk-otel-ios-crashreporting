@@ -24,6 +24,9 @@ let CrashReportingVersionString = "0.2.0"
 
 var TheCrashReporter: PLCrashReporter?
 
+let keyID   = "SessionID"
+let keyName = "ScreenName"
+
 func initializeCrashReporting() {
     let startupSpan = buildTracer().spanBuilder(spanName: "SplunkRumCrashReporting").startSpan()
     startupSpan.setAttribute(key: "component", value: "appstart")
@@ -49,9 +52,8 @@ func initializeCrashReporting() {
     SplunkRum.addSessionIdChangeCallback {
         updateCrashReportSessionId()
     }
-    updateCrashReportScreenName()
-    SplunkRum.addScreenNameChangeCallback {
-        updateCrashReportScreenName()
+    SplunkRum.addScreenNameChangeCallback { name in
+        updateCrashReportScreenName(screenname: name)
     }
     // Now for the pending report if there is one
     if !crashReporter.hasPendingCrashReport() {
@@ -74,16 +76,52 @@ private func buildTracer() -> Tracer {
 
 }
 
+func dataToDictionary(data: Data) ->[String:String]? {
+    let dicFromData = try? PropertyListSerialization.propertyList(from: data, options: PropertyListSerialization.ReadOptions.mutableContainers, format: nil)
+    return dicFromData as? [String: String]
+}
+
+func dictionaryToData(dict: [String:String]) -> Data? {
+    let data = try? PropertyListSerialization.data(fromPropertyList: dict, format: PropertyListSerialization.PropertyListFormat.binary, options: 0)
+    return data
+}
+
 func updateCrashReportSessionId() {
     DispatchQueue.main.async {
-        let str = SplunkRum.getSessionId() + "|" + SplunkRum.getCurrentScreenName()
-        TheCrashReporter?.customData = str.data(using: .utf8)
+        saveSessionIDInToCustomData()
     }
 }
-func updateCrashReportScreenName() {
+
+func saveSessionIDInToCustomData() {
+   if let dict = fetchFromCustomData() {
+        let screenName = dict[keyName] ?? ""
+        saveIntoCustomData(dict: [keyID:SplunkRum.getSessionId(),keyName:screenName])
+    }else {
+        saveIntoCustomData(dict: [keyID:SplunkRum.getSessionId()])
+    }
+}
+
+func saveScreenNameInToCustomData(screenname:String) {
+    if let dict = fetchFromCustomData(){
+        let oldsessionid = dict[keyID] ?? ""
+        saveIntoCustomData(dict: [keyID:oldsessionid,keyName:screenname])
+    }else {
+         saveIntoCustomData(dict: [keyName:screenname])
+    }
+}
+
+func saveIntoCustomData(dict: [String:String]) {
+    TheCrashReporter?.customData = dictionaryToData(dict: dict)
+}
+
+func fetchFromCustomData() -> [String:String]? {
+    guard let data = TheCrashReporter?.customData else { return nil}
+    let dicFromData = dataToDictionary(data: data)
+    return dicFromData
+}
+func updateCrashReportScreenName(screenname:String) {
     DispatchQueue.main.async {
-        let str = SplunkRum.getSessionId() + "|" + SplunkRum.getCurrentScreenName()
-        TheCrashReporter?.customData = str.data(using: .utf8)
+        saveScreenNameInToCustomData(screenname: screenname)
     }
 }
 func loadPendingCrashReport(_ data: Data!) throws {
@@ -94,9 +132,9 @@ func loadPendingCrashReport(_ data: Data!) throws {
         exceptionType = report.exceptionInfo.exceptionName
     }
 
-    let strArr = String(decoding: report.customData, as: UTF8.self).components(separatedBy: "|")
-    let oldSessionId = strArr[0]
-    let screenName = strArr[1]
+    guard let dict = dataToDictionary(data: report.customData) else {return}
+    let oldSessionId = dict[keyID] ?? ""
+    let screenName = dict[keyName] ?? ""
     // Turn the report into a span
     let now = Date()
     let span = buildTracer().spanBuilder(spanName: exceptionType ?? "unknown").setStartTime(time: now).setNoParent().startSpan()
