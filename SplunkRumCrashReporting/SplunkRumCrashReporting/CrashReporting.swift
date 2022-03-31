@@ -82,6 +82,7 @@ func loadPendingCrashReport(_ data: Data!) throws {
         exceptionType = report.exceptionInfo.exceptionName
     }
     guard report.customData != nil  else {
+        SplunkRum.debugLog("Unable to create a crash report due to missing custom data")
             return
     }
     let oldSessionId = String(decoding: report.customData, as: UTF8.self)
