@@ -81,7 +81,9 @@ func loadPendingCrashReport(_ data: Data!) throws {
     if report.hasExceptionInfo {
         exceptionType = report.exceptionInfo.exceptionName
     }
-
+    guard report.customData != nil  else {
+            return
+    }
     let oldSessionId = String(decoding: report.customData, as: UTF8.self)
     // Turn the report into a span
     let now = Date()
