@@ -24,8 +24,8 @@ let CrashReportingVersionString = "0.2.0"
 
 var TheCrashReporter: PLCrashReporter?
 
-let keyID   = "SessionID"
-let keyName = "ScreenName"
+let sessionIdKey   = "SessionID"
+let screenNameKey = "ScreenName"
 
 func initializeCrashReporting() {
     let startupSpan = buildTracer().spanBuilder(spanName: "SplunkRumCrashReporting").startSpan()
@@ -88,25 +88,25 @@ func dictionaryToData(dict: [String: String]) -> Data? {
 
 func updateCrashReportSessionId() {
     DispatchQueue.main.async {
-        saveSessionIDInToCustomData()
+        saveSessionIDIntoCustomData()
     }
 }
 
-func saveSessionIDInToCustomData() {
+func saveSessionIDIntoCustomData() {
    if let dict = fetchFromCustomData() {
-        let screenName = dict[keyName] ?? ""
-        saveIntoCustomData(dict: [keyID: SplunkRum.getSessionId(), keyName: screenName])
+        let screenName = dict[screenNameKey] ?? ""
+        saveIntoCustomData(dict: [sessionIdKey: SplunkRum.getSessionId(), screenNameKey: screenName])
     } else {
-        saveIntoCustomData(dict: [keyID: SplunkRum.getSessionId()])
+        saveIntoCustomData(dict: [sessionIdKey: SplunkRum.getSessionId()])
     }
 }
 
-func saveScreenNameInToCustomData(screenname: String) {
+func saveScreenNameIntoCustomData(screenname: String) {
     if let dict = fetchFromCustomData() {
-        let oldsessionid = dict[keyID] ?? ""
-        saveIntoCustomData(dict: [keyID: oldsessionid, keyName: screenname])
+        let oldsessionid = dict[sessionIdKey] ?? ""
+        saveIntoCustomData(dict: [sessionIdKey: oldsessionid, screenNameKey: screenname])
     } else {
-         saveIntoCustomData(dict: [keyName: screenname])
+         saveIntoCustomData(dict: [screenNameKey: screenname])
     }
 }
 
@@ -121,7 +121,7 @@ func fetchFromCustomData() -> [String: String]? {
 }
 func updateCrashReportScreenName(screenname: String) {
     DispatchQueue.main.async {
-        saveScreenNameInToCustomData(screenname: screenname)
+        saveScreenNameIntoCustomData(screenname: screenname)
     }
 }
 func loadPendingCrashReport(_ data: Data!) throws {
@@ -133,8 +133,8 @@ func loadPendingCrashReport(_ data: Data!) throws {
     }
 
     guard let dict = dataToDictionary(data: report.customData) else {return}
-    let oldSessionId = dict[keyID] ?? ""
-    let screenName = dict[keyName] ?? ""
+    let oldSessionId = dict[sessionIdKey] ?? ""
+    let screenName = dict[screenNameKey] ?? ""
     // Turn the report into a span
     let now = Date()
     let span = buildTracer().spanBuilder(spanName: exceptionType ?? "unknown").setStartTime(time: now).setNoParent().startSpan()
