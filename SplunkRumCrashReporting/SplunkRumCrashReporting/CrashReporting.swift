@@ -23,6 +23,7 @@ import OpenTelemetryApi
 let CrashReportingVersionString = "0.2.0"
 
 var TheCrashReporter: PLCrashReporter?
+var oldSessionId: String
 
 func initializeCrashReporting() {
     let startupSpan = buildTracer().spanBuilder(spanName: "SplunkRumCrashReporting").startSpan()
@@ -81,11 +82,11 @@ func loadPendingCrashReport(_ data: Data!) throws {
     if report.hasExceptionInfo {
         exceptionType = report.exceptionInfo.exceptionName
     }
-    guard report.customData != nil  else {
-        SplunkRum.debugLog("Unable to create a crash report due to missing custom data")
-            return
+    if report.customData != nil {
+        oldSessionId = String(decoding: report.customData, as: UTF8.self)
+    } else {
+        oldSessionId = SplunkRum.getSessionId().data(using: .utf8)
     }
-    let oldSessionId = String(decoding: report.customData, as: UTF8.self)
     // Turn the report into a span
     let now = Date()
     let span = buildTracer().spanBuilder(spanName: exceptionType ?? "unknown").setStartTime(time: now).setNoParent().startSpan()
