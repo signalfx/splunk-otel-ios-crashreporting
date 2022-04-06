@@ -82,16 +82,13 @@ func loadPendingCrashReport(_ data: Data!) throws {
     if report.hasExceptionInfo {
         exceptionType = report.exceptionInfo.exceptionName
     }
-    if report.customData != nil {
-        oldSessionId = String(decoding: report.customData, as: UTF8.self)
-    } else {
-        oldSessionId = String(decoding: SplunkRum.getSessionId().data(using: .utf8)!, as: UTF8.self)
-    }
     // Turn the report into a span
     let now = Date()
     let span = buildTracer().spanBuilder(spanName: exceptionType ?? "unknown").setStartTime(time: now).setNoParent().startSpan()
     span.setAttribute(key: "component", value: "crash")
-    span.setAttribute(key: "crash.rumSessionId", value: oldSessionId!)
+    if (report.customData != nil) {
+        span.setAttribute(key: "crash.rumSessionId", value: String(decoding: report.customData, as: UTF8.self))
+    }
     // "marketing version" here matches up to our use of CFBundleShortVersionString
     span.setAttribute(key: "crash.app.version", value: report.applicationInfo.applicationMarketingVersion)
     span.setAttribute(key: "error", value: true)
