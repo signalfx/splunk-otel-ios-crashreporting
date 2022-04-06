@@ -23,7 +23,6 @@ import OpenTelemetryApi
 let CrashReportingVersionString = "0.2.0"
 
 var TheCrashReporter: PLCrashReporter?
-var oldSessionId:String?
 
 func initializeCrashReporting() {
     let startupSpan = buildTracer().spanBuilder(spanName: "SplunkRumCrashReporting").startSpan()
@@ -86,7 +85,7 @@ func loadPendingCrashReport(_ data: Data!) throws {
     let now = Date()
     let span = buildTracer().spanBuilder(spanName: exceptionType ?? "unknown").setStartTime(time: now).setNoParent().startSpan()
     span.setAttribute(key: "component", value: "crash")
-    if (report.customData != nil) {
+    if report.customData != nil {
         span.setAttribute(key: "crash.rumSessionId", value: String(decoding: report.customData, as: UTF8.self))
     }
     // "marketing version" here matches up to our use of CFBundleShortVersionString
