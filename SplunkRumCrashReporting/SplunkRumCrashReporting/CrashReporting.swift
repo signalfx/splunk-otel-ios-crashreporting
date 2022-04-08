@@ -71,9 +71,7 @@ private func buildTracer() -> Tracer {
 }
 
 func updateCrashReportSessionId() {
-    DispatchQueue.main.async {
-        TheCrashReporter?.customData = SplunkRum.getSessionId().data(using: .utf8)
-    }
+   TheCrashReporter?.customData = SplunkRum.getSessionId().data(using: .utf8)
 }
 
 func loadPendingCrashReport(_ data: Data!) throws {
@@ -83,13 +81,13 @@ func loadPendingCrashReport(_ data: Data!) throws {
     if report.hasExceptionInfo {
         exceptionType = report.exceptionInfo.exceptionName
     }
-
-    let oldSessionId = String(decoding: report.customData, as: UTF8.self)
     // Turn the report into a span
     let now = Date()
     let span = buildTracer().spanBuilder(spanName: exceptionType ?? "unknown").setStartTime(time: now).setNoParent().startSpan()
     span.setAttribute(key: "component", value: "crash")
-    span.setAttribute(key: "crash.rumSessionId", value: oldSessionId)
+    if report.customData != nil {
+        span.setAttribute(key: "crash.rumSessionId", value: String(decoding: report.customData, as: UTF8.self))
+    }
     // "marketing version" here matches up to our use of CFBundleShortVersionString
     span.setAttribute(key: "crash.app.version", value: report.applicationInfo.applicationMarketingVersion)
     span.setAttribute(key: "error", value: true)
