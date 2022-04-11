@@ -131,22 +131,27 @@ func loadPendingCrashReport(_ data: Data!) throws {
     if report.hasExceptionInfo {
         exceptionType = report.exceptionInfo.exceptionName
     }
-
-    guard let dict = dataToDictionary(data: report.customData) else {return}
-    let oldSessionId = dict[sessionIdKey] ?? ""
-    let screenName = dict[screenNameKey] ?? ""
     // Turn the report into a span
     let now = Date()
     let span = buildTracer().spanBuilder(spanName: exceptionType ?? "unknown").setStartTime(time: now).setNoParent().startSpan()
+    if report.customData != nil {
+        let dict = dataToDictionary(data: report.customData)
+        if dict?[sessionIdKey] != nil {
+            let oldSessionId = dict?[sessionIdKey]
+            span.setAttribute(key: "crash.rumSessionId", value: oldSessionId!)
+        }
+        if dict?[screenNameKey] != nil {
+            let screenName = dict?[screenNameKey]
+            span.setAttribute(key: "screen.name", value: screenName!)
+        }
+    }
     span.setAttribute(key: "component", value: "crash")
-    span.setAttribute(key: "crash.rumSessionId", value: oldSessionId)
     // "marketing version" here matches up to our use of CFBundleShortVersionString
     span.setAttribute(key: "crash.app.version", value: report.applicationInfo.applicationMarketingVersion)
     span.setAttribute(key: "error", value: true)
     span.addEvent(name: "crash.timestamp", timestamp: report.systemInfo.timestamp)
     span.setAttribute(key: "exception.type", value: exceptionType ?? "unknown")
     span.setAttribute(key: "crash.address", value: report.signalInfo.address.description)
-    span.setAttribute(key: "screen.name", value: screenName)
     for case let thread as PLCrashReportThreadInfo in report.threads where thread.crashed {
         span.setAttribute(key: "exception.stacktrace", value: crashedThreadToStack(report: report, thread: thread))
         break
