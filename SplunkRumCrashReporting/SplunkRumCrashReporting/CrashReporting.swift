@@ -151,6 +151,7 @@ func formatStackFrame(frame: PLCrashReportStackFrameInfo, frameNum: Int, report:
     }
     return String(format: "%-4ld%-35@ 0x%016lx %@", frameNum, imageName, frame.instructionPointer, symbolString!)
 }
+// Add binary image as attribute of crash span
 func binaryImageToStack(report: PLCrashReport, binaryImage: PLCrashReportBinaryImageInfo) -> String {
     var baseAddress: UInt64 = 0
     var imageSize: UInt64 = 0
