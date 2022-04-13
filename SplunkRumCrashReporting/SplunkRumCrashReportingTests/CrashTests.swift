@@ -70,7 +70,7 @@ class CrashTests: XCTestCase {
         XCTAssertEqual(crashReport!.attributes["error"]?.description, "true")
         XCTAssertEqual(crashReport!.attributes["exception.type"]?.description, "SIGILL")
         XCTAssertTrue(crashReport!.attributes["exception.stacktrace"]?.description.contains("UIKitCore") ?? false)
-
+        XCTAssertTrue(crashReport!.attributes["binaryImages"]?.description.contains(".dylib") ?? false)
         XCTAssertNotNil(startup)
         XCTAssertEqual(startup!.attributes["component"]?.description, "appstart")
 
