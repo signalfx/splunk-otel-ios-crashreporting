@@ -73,6 +73,8 @@ class CrashTests: XCTestCase {
 
         XCTAssertNotNil(startup)
         XCTAssertEqual(startup!.attributes["component"]?.description, "appstart")
+        
+        XCTAssertNotNil(crashReport!.attributes["screen.name"])
 
     }
 }
