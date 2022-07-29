@@ -104,7 +104,7 @@ func loadPendingCrashReport(_ data: Data!) throws {
     }
     // binary images
     let text = NSMutableString()
-    for case let binaryImage as PLCrashReportBinaryImageInfo in report.images  {
+    for case let binaryImage as PLCrashReportBinaryImageInfo in report.images {
         text.append(binaryImageToStack(report: report, binaryImage: binaryImage))
         text.append("\n")
     }
@@ -166,10 +166,10 @@ func binaryImageToStack(report: PLCrashReport, binaryImage: PLCrashReportBinaryI
         baseAddress = imageInfo.imageBaseAddress
         imageSize = imageInfo.imageSize
         imageUUID = imageInfo.imageUUID
-        //PLCrashReportSystemInfo PLCrashReportArchitecture
+        // PLCrashReportSystemInfo PLCrashReportArchitecture
         binaryArchi = convertBinaryArchitectueIntoString(archi: report.systemInfo.architecture)
     }
-    return String(format: "0x%lx 0x%lx %@ %@ <%@> %-35@ ",baseAddress,imageSize,shortname,binaryArchi,imageUUID,imageName)
+    return String(format: "0x%lx 0x%lx %@ %@ <%@> %-35@ ", baseAddress, imageSize, shortname, binaryArchi, imageUUID, imageName)
 }
 func convertBinaryArchitectueIntoString(archi: PLCrashReportArchitecture) -> String {
     var architecture = ""
