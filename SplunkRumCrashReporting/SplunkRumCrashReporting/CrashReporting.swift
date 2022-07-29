@@ -69,7 +69,7 @@ private func buildTracer() -> Tracer {
     return OpenTelemetry.instance.tracerProvider.get(instrumentationName: "splunk-ios-crashreporting", instrumentationVersion: CrashReportingVersionString)
 
 }
-//CustomData
+
 func updateCrashReportSessionId() {
    TheCrashReporter?.customData = SplunkRum.getSessionId().data(using: .utf8)
 }
