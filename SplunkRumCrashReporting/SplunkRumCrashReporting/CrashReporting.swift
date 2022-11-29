@@ -127,7 +127,7 @@ func loadPendingCrashReport(_ data: Data!) throws {
             span.setAttribute(key: "crash.rumSessionId", value: customData!["sessionId"] as! String)
             span.setAttribute(key: "crash.batteryLevel", value: customData!["batteryLevel"] as! String)
             span.setAttribute(key: "crash.freeDiskSpace", value: customData!["freeDiskSpace"] as! String)
-            span.setAttribute(key: "crash.freeRAM", value: customData!["freeMemory"] as! String)
+            span.setAttribute(key: "crash.freeMemory", value: customData!["freeMemory"] as! String)
         } else {
             span.setAttribute(key: "crash.rumSessionId", value: String(decoding: report.customData, as: UTF8.self))
         }
