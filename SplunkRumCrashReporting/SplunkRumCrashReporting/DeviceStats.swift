@@ -20,7 +20,6 @@ import System
 import UIKit
 
 internal class DeviceStats {
-    
     class var batteryLevel: String {
         get {
             UIDevice.current.isBatteryMonitoringEnabled = true
@@ -28,7 +27,6 @@ internal class DeviceStats {
             return "\(level)%"
         }
     }
-    
     class var freeDiskSpace: String {
         get {
             do {
@@ -45,15 +43,12 @@ internal class DeviceStats {
             }
         }
     }
-    
     class var freeMemory: String {
         get {
             var usedBytes: Float = 0
             let totalBytes = Float(ProcessInfo.processInfo.physicalMemory)
-            
             var info = mach_task_basic_info()
             var count = mach_msg_type_number_t(MemoryLayout<mach_task_basic_info>.size) / 4
-            
             let kerr: kern_return_t = withUnsafeMutablePointer(to: &info) {
                 $0.withMemoryRebound(to: integer_t.self, capacity: 1) {
                     task_info(
@@ -64,13 +59,11 @@ internal class DeviceStats {
                     )
                 }
             }
-            
             if kerr == KERN_SUCCESS {
                 usedBytes = Float(info.resident_size)
             } else {
                 return "Unknown"
             }
-            
             let freeBytes = totalBytes - usedBytes
             return ByteCountFormatter.string(fromByteCount: Int64(freeBytes), countStyle: .memory)
         }

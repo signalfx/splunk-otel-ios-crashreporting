@@ -20,20 +20,16 @@ import Foundation
 import XCTest
 
 class DeviceStatsTests: XCTestCase {
-    
     func testBattery() throws {
         let batteryLevel = DeviceStats.batteryLevel
         XCTAssertTrue(!batteryLevel.isEmpty)
     }
-    
     func testFreeDiskSpace() throws {
         let diskSpace = DeviceStats.freeDiskSpace
         XCTAssertTrue(!diskSpace.isEmpty)
     }
-    
     func testFreeMemory() throws {
         let freeMemory = DeviceStats.freeMemory
         XCTAssertTrue(!freeMemory.isEmpty)
     }
-    
 }
