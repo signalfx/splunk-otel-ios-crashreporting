@@ -20,9 +20,10 @@ import CrashReporter
 import SplunkOtel
 import OpenTelemetryApi
 
-let CrashReportingVersionString = "0.2.0"
+let CrashReportingVersionString = "0.3.0"
 
 var TheCrashReporter: PLCrashReporter?
+private var customDataDictionary: [String: String] = [String: String]()
 
 func initializeCrashReporting() {
     let startupSpan = buildTracer().spanBuilder(spanName: "SplunkRumCrashReporting").startSpan()
@@ -46,6 +47,8 @@ func initializeCrashReporting() {
     }
     TheCrashReporter = crashReporter
     updateCrashReportSessionId()
+    updateDeviceStats()
+    startPollingForDeviceStats()
     SplunkRum.addSessionIdChangeCallback {
         updateCrashReportSessionId()
     }
@@ -71,7 +74,40 @@ private func buildTracer() -> Tracer {
 }
 
 func updateCrashReportSessionId() {
-   TheCrashReporter?.customData = SplunkRum.getSessionId().data(using: .utf8)
+   do {
+       customDataDictionary["sessionId"] = SplunkRum.getSessionId()
+       let customData = try NSKeyedArchiver.archivedData(withRootObject: customDataDictionary, requiringSecureCoding: false)
+       TheCrashReporter?.customData = customData
+   } catch {
+        // We have failed to archive the custom data dictionary.
+        SplunkRum.debugLog("Failed to add the sessionId to the crash reports custom data.")
+   }
+}
+
+private func updateDeviceStats() {
+    do {
+        customDataDictionary["batteryLevel"] = DeviceStats.batteryLevel
+        customDataDictionary["freeDiskSpace"] = DeviceStats.freeDiskSpace
+        customDataDictionary["freeMemory"] = DeviceStats.freeMemory
+        let customData = try NSKeyedArchiver.archivedData(withRootObject: customDataDictionary, requiringSecureCoding: false)
+        TheCrashReporter?.customData = customData
+    } catch {
+        // We have failed to archive the custom data dictionary.
+        SplunkRum.debugLog("Failed to add the device stats to the crash reports custom data.")
+    }
+}
+
+/*
+ Will poll every 5 seconds to update the device stats.
+ */
+private func startPollingForDeviceStats() {
+    let repeatSeconds: Double = 5 * 1000
+    DispatchQueue.global(qos: .background).async {
+        let timer = Timer.scheduledTimer(withTimeInterval: repeatSeconds, repeats: true) { timer in
+            updateDeviceStats()
+        }
+        timer.fire()
+    }
 }
 
 func loadPendingCrashReport(_ data: Data!) throws {
@@ -86,7 +122,11 @@ func loadPendingCrashReport(_ data: Data!) throws {
     let span = buildTracer().spanBuilder(spanName: exceptionType ?? "unknown").setStartTime(time: now).setNoParent().startSpan()
     span.setAttribute(key: "component", value: "crash")
     if report.customData != nil {
-        span.setAttribute(key: "crash.rumSessionId", value: String(decoding: report.customData, as: UTF8.self))
+        let customData = NSKeyedUnarchiver.unarchiveObject(with: report.customData) as! [String: String]
+        span.setAttribute(key: "crash.rumSessionId", value: customData["sessionId"] as! String)
+        span.setAttribute(key: "crash.batteryLevel", value: customData["batteryLevel"] as! String)
+        span.setAttribute(key: "crash.freeDiskSpace", value: customData["freeDiskSpace"] as! String)
+        span.setAttribute(key: "crash.freeRAM", value: customData["freeMemory"] as! String)
     }
     // "marketing version" here matches up to our use of CFBundleShortVersionString
     span.setAttribute(key: "crash.app.version", value: report.applicationInfo.applicationMarketingVersion)
@@ -105,7 +145,7 @@ func loadPendingCrashReport(_ data: Data!) throws {
     span.end(time: now)
 }
 
-// FIXME this is a messy copy+paste of select bits of PLCrashReportTextForamtter
+// FIXME this is a messy copy+paste of select bits of PLCrashReportTextFormatter
 func crashedThreadToStack(report: PLCrashReport, thread: PLCrashReportThreadInfo) -> String {
     let text = NSMutableString()
     text.appendFormat("Thread %ld", thread.threadNumber)
