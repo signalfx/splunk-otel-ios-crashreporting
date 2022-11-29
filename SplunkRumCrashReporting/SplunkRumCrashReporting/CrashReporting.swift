@@ -103,7 +103,7 @@ private func updateDeviceStats() {
 private func startPollingForDeviceStats() {
     let repeatSeconds: Double = 5 * 1000
     DispatchQueue.global(qos: .background).async {
-        let timer = Timer.scheduledTimer(withTimeInterval: repeatSeconds, repeats: true) { timer in
+        let timer = Timer.scheduledTimer(withTimeInterval: repeatSeconds, repeats: true) { _ in
             updateDeviceStats()
         }
         timer.fire()
