@@ -122,11 +122,15 @@ func loadPendingCrashReport(_ data: Data!) throws {
     let span = buildTracer().spanBuilder(spanName: exceptionType ?? "unknown").setStartTime(time: now).setNoParent().startSpan()
     span.setAttribute(key: "component", value: "crash")
     if report.customData != nil {
-        let customData = NSKeyedUnarchiver.unarchiveObject(with: report.customData) as! [String: String]
-        span.setAttribute(key: "crash.rumSessionId", value: customData["sessionId"] as! String)
-        span.setAttribute(key: "crash.batteryLevel", value: customData["batteryLevel"] as! String)
-        span.setAttribute(key: "crash.freeDiskSpace", value: customData["freeDiskSpace"] as! String)
-        span.setAttribute(key: "crash.freeRAM", value: customData["freeMemory"] as! String)
+        let customData = NSKeyedUnarchiver.unarchiveObject(with: report.customData) as? [String: String]
+        if customData != nil {
+            span.setAttribute(key: "crash.rumSessionId", value: customData!["sessionId"] as! String)
+            span.setAttribute(key: "crash.batteryLevel", value: customData!["batteryLevel"] as! String)
+            span.setAttribute(key: "crash.freeDiskSpace", value: customData!["freeDiskSpace"] as! String)
+            span.setAttribute(key: "crash.freeRAM", value: customData!["freeMemory"] as! String)
+        } else {
+            span.setAttribute(key: "crash.rumSessionId", value: String(decoding: report.customData, as: UTF8.self))
+        }
     }
     // "marketing version" here matches up to our use of CFBundleShortVersionString
     span.setAttribute(key: "crash.app.version", value: report.applicationInfo.applicationMarketingVersion)
