@@ -37,6 +37,7 @@ internal class DeviceStats {
             return "Unknown"
         }
     }
+    // https://stackoverflow.com/questions/5012886/determining-the-available-amount-of-ram-on-an-ios-device/8540665#8540665
     class var freeMemory: String {
         var usedBytes: Float = 0
         let totalBytes = Float(ProcessInfo.processInfo.physicalMemory)

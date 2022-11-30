@@ -101,7 +101,7 @@ private func updateDeviceStats() {
  Will poll every 5 seconds to update the device stats.
  */
 private func startPollingForDeviceStats() {
-    let repeatSeconds: Double = 5 * 1000
+    let repeatSeconds: Double = 5
     DispatchQueue.global(qos: .background).async {
         let timer = Timer.scheduledTimer(withTimeInterval: repeatSeconds, repeats: true) { _ in
             updateDeviceStats()
@@ -124,10 +124,10 @@ func loadPendingCrashReport(_ data: Data!) throws {
     if report.customData != nil {
         let customData = NSKeyedUnarchiver.unarchiveObject(with: report.customData) as? [String: String]
         if customData != nil {
-            span.setAttribute(key: "crash.rumSessionId", value: customData!["sessionId"] as! String)
-            span.setAttribute(key: "crash.batteryLevel", value: customData!["batteryLevel"] as! String)
-            span.setAttribute(key: "crash.freeDiskSpace", value: customData!["freeDiskSpace"] as! String)
-            span.setAttribute(key: "crash.freeMemory", value: customData!["freeMemory"] as! String)
+            span.setAttribute(key: "crash.rumSessionId", value: customData!["sessionId"]!)
+            span.setAttribute(key: "crash.batteryLevel", value: customData!["batteryLevel"]!)
+            span.setAttribute(key: "crash.freeDiskSpace", value: customData!["freeDiskSpace"]!)
+            span.setAttribute(key: "crash.freeMemory", value: customData!["freeMemory"]!)
         } else {
             span.setAttribute(key: "crash.rumSessionId", value: String(decoding: report.customData, as: UTF8.self))
         }

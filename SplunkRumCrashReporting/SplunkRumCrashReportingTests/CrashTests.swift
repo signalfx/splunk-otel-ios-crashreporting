@@ -43,8 +43,8 @@ class TestSpanExporter: SpanExporter {
 }
 
 class CrashTests: XCTestCase {
-    func testBasics() throws {
-        let crashPath = Bundle(for: CrashTests.self).url(forResource: "sample", withExtension: "plcrash")!
+    func testBasics_v1() throws {
+        let crashPath = Bundle(for: CrashTests.self).url(forResource: "sample_v1", withExtension: "plcrash")!
         let crashData = try Data(contentsOf: crashPath)
 
         SplunkRum.initialize(beaconUrl: "http://127.0.0.1:8989/v1/traces", rumAuth: "FAKE", options: SplunkRumOptions(allowInsecureBeacon: true, debug: true))
@@ -70,6 +70,41 @@ class CrashTests: XCTestCase {
         XCTAssertEqual(crashReport!.attributes["error"]?.description, "true")
         XCTAssertEqual(crashReport!.attributes["exception.type"]?.description, "SIGILL")
         XCTAssertTrue(crashReport!.attributes["exception.stacktrace"]?.description.contains("UIKitCore") ?? false)
+
+        XCTAssertNotNil(startup)
+        XCTAssertEqual(startup!.attributes["component"]?.description, "appstart")
+
+    }
+    func testBasics_v2() throws {
+        let crashPath = Bundle(for: CrashTests.self).url(forResource: "sample_v2", withExtension: "plcrash")!
+        let crashData = try Data(contentsOf: crashPath)
+
+        SplunkRum.initialize(beaconUrl: "http://127.0.0.1:8989/v1/traces", rumAuth: "FAKE", options: SplunkRumOptions(allowInsecureBeacon: true, debug: true))
+        OpenTelemetrySDK.instance.tracerProvider.addSpanProcessor(SimpleSpanProcessor(spanExporter: TestSpanExporter()))
+        localSpans.removeAll()
+
+        SplunkRumCrashReporting.start()
+        try loadPendingCrashReport(crashData)
+
+        XCTAssertEqual(localSpans.count, 4)
+        let crashReport = localSpans.first(where: { (span) -> Bool in
+            return span.name == "SIGTRAP"
+        })
+        let startup = localSpans.first(where: { (span) -> Bool in
+            return span.name == "SplunkRumCrashReporting"
+        })
+
+        XCTAssertNotNil(crashReport)
+        XCTAssertNotEqual(crashReport!.attributes["splunk.rumSessionId"], crashReport!.attributes["crash.rumSessionId"])
+        XCTAssertEqual(crashReport!.attributes["crash.rumSessionId"]?.description, "388e59237de675ef8e9751fcf2b0f936")
+        XCTAssertEqual(crashReport!.attributes["crash.address"]?.description, "7595465412")
+        XCTAssertEqual(crashReport!.attributes["component"]?.description, "crash")
+        XCTAssertEqual(crashReport!.attributes["error"]?.description, "true")
+        XCTAssertEqual(crashReport!.attributes["exception.type"]?.description, "SIGTRAP")
+        XCTAssertTrue(crashReport!.attributes["exception.stacktrace"]?.description.contains("UIKitCore") ?? false)
+        XCTAssertEqual(crashReport!.attributes["crash.batteryLevel"]?.description, "91.0%")
+        XCTAssertEqual(crashReport!.attributes["crash.freeDiskSpace"]?.description, "197.23 GB")
+        XCTAssertEqual(crashReport!.attributes["crash.freeMemory"]?.description, "5.54 GB")
 
         XCTAssertNotNil(startup)
         XCTAssertEqual(startup!.attributes["component"]?.description, "appstart")

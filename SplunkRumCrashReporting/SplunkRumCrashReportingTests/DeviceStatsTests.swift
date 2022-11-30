@@ -22,14 +22,16 @@ import XCTest
 class DeviceStatsTests: XCTestCase {
     func testBattery() throws {
         let batteryLevel = DeviceStats.batteryLevel
-        XCTAssertTrue(!batteryLevel.isEmpty)
+        XCTAssertEqual(batteryLevel, "100.0%")
     }
     func testFreeDiskSpace() throws {
         let diskSpace = DeviceStats.freeDiskSpace
-        XCTAssertTrue(!diskSpace.isEmpty)
+        let space = Int(diskSpace.components(separatedBy: CharacterSet.decimalDigits.inverted).joined()) ?? 0
+        XCTAssertTrue(space > 0)
     }
     func testFreeMemory() throws {
         let freeMemory = DeviceStats.freeMemory
-        XCTAssertTrue(!freeMemory.isEmpty)
+        let space = Int(freeMemory.components(separatedBy: CharacterSet.decimalDigits.inverted).joined()) ?? 0
+        XCTAssertTrue(space > 0)
     }
 }
