@@ -12,8 +12,11 @@
 		86461EEB26972906007C6DC0 /* SplunkRumCrashReporting.h in Headers */ = {isa = PBXBuildFile; fileRef = 86461EDD26972906007C6DC0 /* SplunkRumCrashReporting.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		86461EF726972964007C6DC0 /* CrashReporting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86461EF626972964007C6DC0 /* CrashReporting.swift */; };
 		86461EFC269729C0007C6DC0 /* CrashReporter in Frameworks */ = {isa = PBXBuildFile; productRef = 86461EFB269729C0007C6DC0 /* CrashReporter */; };
-		86461F0526972A11007C6DC0 /* sample.plcrash in Resources */ = {isa = PBXBuildFile; fileRef = 86461F0426972A11007C6DC0 /* sample.plcrash */; };
+		86461F0526972A11007C6DC0 /* sample_v1.plcrash in Resources */ = {isa = PBXBuildFile; fileRef = 86461F0426972A11007C6DC0 /* sample_v1.plcrash */; };
 		86D3180A271655B300B43379 /* SplunkOtel in Frameworks */ = {isa = PBXBuildFile; productRef = 86D31809271655B300B43379 /* SplunkOtel */; };
+		D774545D28E38CF40056159F /* DeviceStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = D774545C28E38CF40056159F /* DeviceStats.swift */; };
+		D7C64D1228E494C50086368D /* DeviceStatsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7C64D1128E494C50086368D /* DeviceStatsTests.swift */; };
+		D7D14290293804A200CAD87E /* sample_v2.plcrash in Resources */ = {isa = PBXBuildFile; fileRef = D7D1428F293804A200CAD87E /* sample_v2.plcrash */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,7 +37,10 @@
 		86461EE826972906007C6DC0 /* CrashTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrashTests.swift; sourceTree = "<group>"; };
 		86461EEA26972906007C6DC0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		86461EF626972964007C6DC0 /* CrashReporting.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CrashReporting.swift; sourceTree = "<group>"; };
-		86461F0426972A11007C6DC0 /* sample.plcrash */ = {isa = PBXFileReference; lastKnownFileType = file; path = sample.plcrash; sourceTree = "<group>"; };
+		86461F0426972A11007C6DC0 /* sample_v1.plcrash */ = {isa = PBXFileReference; lastKnownFileType = file.plcrash; path = sample_v1.plcrash; sourceTree = "<group>"; };
+		D774545C28E38CF40056159F /* DeviceStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceStats.swift; sourceTree = "<group>"; };
+		D7C64D1128E494C50086368D /* DeviceStatsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceStatsTests.swift; sourceTree = "<group>"; };
+		D7D1428F293804A200CAD87E /* sample_v2.plcrash */ = {isa = PBXFileReference; lastKnownFileType = file; path = sample_v2.plcrash; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,6 +86,7 @@
 			isa = PBXGroup;
 			children = (
 				86461EF626972964007C6DC0 /* CrashReporting.swift */,
+				D774545C28E38CF40056159F /* DeviceStats.swift */,
 				86461EDD26972906007C6DC0 /* SplunkRumCrashReporting.h */,
 				86461EDE26972906007C6DC0 /* Info.plist */,
 			);
@@ -89,8 +96,10 @@
 		86461EE726972906007C6DC0 /* SplunkRumCrashReportingTests */ = {
 			isa = PBXGroup;
 			children = (
-				86461F0426972A11007C6DC0 /* sample.plcrash */,
+				D7D1428F293804A200CAD87E /* sample_v2.plcrash */,
+				86461F0426972A11007C6DC0 /* sample_v1.plcrash */,
 				86461EE826972906007C6DC0 /* CrashTests.swift */,
+				D7C64D1128E494C50086368D /* DeviceStatsTests.swift */,
 				86461EEA26972906007C6DC0 /* Info.plist */,
 			);
 			path = SplunkRumCrashReportingTests;
@@ -203,7 +212,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				86461F0526972A11007C6DC0 /* sample.plcrash in Resources */,
+				86461F0526972A11007C6DC0 /* sample_v1.plcrash in Resources */,
+				D7D14290293804A200CAD87E /* sample_v2.plcrash in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -215,6 +225,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				86461EF726972964007C6DC0 /* CrashReporting.swift in Sources */,
+				D774545D28E38CF40056159F /* DeviceStats.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -223,6 +234,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				86461EE926972906007C6DC0 /* CrashTests.swift in Sources */,
+				D7C64D1228E494C50086368D /* DeviceStatsTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
