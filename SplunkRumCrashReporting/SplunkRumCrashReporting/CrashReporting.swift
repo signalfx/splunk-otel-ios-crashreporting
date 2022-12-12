@@ -20,7 +20,7 @@ import CrashReporter
 import SplunkOtel
 import OpenTelemetryApi
 
-let CrashReportingVersionString = "0.3.0"
+let CrashReportingVersionString = "0.5.0"
 
 var TheCrashReporter: PLCrashReporter?
 private var customDataDictionary: [String: String] = [String: String]()
