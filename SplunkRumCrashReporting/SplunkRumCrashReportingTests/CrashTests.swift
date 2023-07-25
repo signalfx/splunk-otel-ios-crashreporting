@@ -21,8 +21,6 @@ limitations under the License.
 import SplunkOtel
 import Foundation
 import XCTest
-import OpenTelemetryApi
-import OpenTelemetrySdk
 
 var localSpans: [SpanData] = []
 
@@ -47,8 +45,14 @@ class CrashTests: XCTestCase {
         let crashPath = Bundle(for: CrashTests.self).url(forResource: "sample_v1", withExtension: "plcrash")!
         let crashData = try Data(contentsOf: crashPath)
 
-        SplunkRum.initialize(beaconUrl: "http://127.0.0.1:8989/v1/traces", rumAuth: "FAKE", options: SplunkRumOptions(allowInsecureBeacon: true, debug: true))
-        OpenTelemetrySDK.instance.tracerProvider.addSpanProcessor(SimpleSpanProcessor(spanExporter: TestSpanExporter()))
+        SplunkRumBuilder(beaconUrl: "http://127.0.0.1:8989/v1/traces", rumAuth: "FAKE")
+            .allowInsecureBeacon(enabled: true)
+            .debug(enabled: true)
+            .build()
+        let tracerProvider = TracerProviderBuilder()
+            .add(spanProcessor: SimpleSpanProcessor(spanExporter: TestSpanExporter()))
+            .build()
+        OpenTelemetry.registerTracerProvider(tracerProvider: tracerProvider)
         localSpans.removeAll()
 
         SplunkRumCrashReporting.start()
@@ -79,14 +83,20 @@ class CrashTests: XCTestCase {
         let crashPath = Bundle(for: CrashTests.self).url(forResource: "sample_v2", withExtension: "plcrash")!
         let crashData = try Data(contentsOf: crashPath)
 
-        SplunkRum.initialize(beaconUrl: "http://127.0.0.1:8989/v1/traces", rumAuth: "FAKE", options: SplunkRumOptions(allowInsecureBeacon: true, debug: true))
-        OpenTelemetrySDK.instance.tracerProvider.addSpanProcessor(SimpleSpanProcessor(spanExporter: TestSpanExporter()))
+        SplunkRumBuilder(beaconUrl: "http://127.0.0.1:8989/v1/traces", rumAuth: "FAKE")
+            .allowInsecureBeacon(enabled: true)
+            .debug(enabled: true)
+            .build()
+        let tracerProvider = TracerProviderBuilder()
+            .add(spanProcessor: SimpleSpanProcessor(spanExporter: TestSpanExporter()))
+            .build()
+        OpenTelemetry.registerTracerProvider(tracerProvider: tracerProvider)
         localSpans.removeAll()
 
         SplunkRumCrashReporting.start()
         try loadPendingCrashReport(crashData)
 
-        XCTAssertEqual(localSpans.count, 4)
+        XCTAssertEqual(localSpans.count, 2)
         let crashReport = localSpans.first(where: { (span) -> Bool in
             return span.name == "SIGTRAP"
         })

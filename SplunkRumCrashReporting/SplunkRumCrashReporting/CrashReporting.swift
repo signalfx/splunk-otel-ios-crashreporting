@@ -18,9 +18,8 @@ limitations under the License.
 import Foundation
 import CrashReporter
 import SplunkOtel
-import OpenTelemetryApi
 
-let CrashReportingVersionString = "0.5.0"
+let CrashReportingVersionString = "0.5.1"
 
 var TheCrashReporter: PLCrashReporter?
 private var customDataDictionary: [String: String] = [String: String]()
