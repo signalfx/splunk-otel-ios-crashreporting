@@ -522,7 +522,7 @@
 			repositoryURL = "https://github.com/microsoft/plcrashreporter";
 			requirement = {
 				kind = exactVersion;
-				version = 1.9.0;
+				version = 1.11.1;
 			};
 		};
 		86D31808271655B300B43379 /* XCRemoteSwiftPackageReference "splunk-otel-ios" */ = {
