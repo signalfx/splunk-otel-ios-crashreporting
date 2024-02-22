@@ -31,7 +31,7 @@ func initializeCrashReporting() {
     defer {
         startupSpan.end()
     }
-    let config = PLCrashReporterConfig(signalHandlerType: .BSD, symbolicationStrategy: PLCrashReporterSymbolicationStrategy(rawValue: 0) /* none */)
+    let config = PLCrashReporterConfig(signalHandlerType: .BSD, symbolicationStrategy: .all /* all */)
     let crashReporter_ = PLCrashReporter(configuration: config)
     if crashReporter_ == nil {
         startupSpan.setAttribute(key: "error.message", value: "Cannot construct PLCrashReporter")
@@ -146,6 +146,13 @@ func loadPendingCrashReport(_ data: Data!) throws {
         span.setAttribute(key: "exception.type", value: report.exceptionInfo.exceptionName)
         span.setAttribute(key: "exception.message", value: report.exceptionInfo.exceptionReason)
     }
+    // binary images
+    let text = NSMutableString()
+    for case let binaryImage as PLCrashReportBinaryImageInfo in report.images {
+        text.append(binaryImageToStack(report: report, binaryImage: binaryImage))
+        text.append("\n")
+    }
+    span.setAttribute(key: "binaryImages", value: String(text))
     span.end(time: now)
 }
 
@@ -188,7 +195,46 @@ func formatStackFrame(frame: PLCrashReportStackFrameInfo, frameNum: Int, report:
     }
     return String(format: "%-4ld%-35@ 0x%016lx %@", frameNum, imageName, frame.instructionPointer, symbolString!)
 }
-
+// Add binary image as attribute of crash span
+func binaryImageToStack(report: PLCrashReport, binaryImage: PLCrashReportBinaryImageInfo) -> String {
+    var baseAddress: UInt64 = 0
+    var imageSize: UInt64 = 0
+    var imageName = "???"
+    var imageUUID = "XXX"
+    var shortname = imageName
+    let imageInfo = binaryImage
+    var binaryArchi = "Unknown"
+    if imageInfo != nil {
+        imageName = imageInfo.imageName
+        shortname = URL(fileURLWithPath: imageName).lastPathComponent
+        baseAddress = imageInfo.imageBaseAddress
+        imageSize = imageInfo.imageSize
+        imageUUID = imageInfo.imageUUID
+        // PLCrashReportSystemInfo PLCrashReportArchitecture
+        binaryArchi = convertBinaryArchitectueIntoString(archi: report.systemInfo.architecture)
+    }
+    return String(format: "0x%lx 0x%lx %@ %@ <%@> %-35@ ", baseAddress, imageSize, shortname, binaryArchi, imageUUID, imageName)
+}
+func convertBinaryArchitectueIntoString(archi: PLCrashReportArchitecture) -> String {
+    var architecture = ""
+    switch archi {
+    case PLCrashReportArchitectureX86_32:
+        architecture = "x86-32"
+    case PLCrashReportArchitectureX86_64:
+        architecture = "x86-64"
+    case  PLCrashReportArchitectureARMv6:
+        architecture = "ARMv6"
+    case PLCrashReportArchitecturePPC:
+        architecture = "PPC"
+    case PLCrashReportArchitecturePPC64:
+        architecture = "PPC64"
+    case PLCrashReportArchitectureARMv7:
+        architecture = "ARMv7"
+    default:
+        architecture = "Unknown"
+    }
+    return architecture
+}
 /**
   Call start() *after* SplunkRum.initialize()
 */
