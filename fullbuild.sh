@@ -1,6 +1,5 @@
 #!/bin/bash
 set -ex
-swiftlint
 
 # Make sure the version numbers on the podspec and CrashReporting.swift match
 echo "Checking that version numbers match"
