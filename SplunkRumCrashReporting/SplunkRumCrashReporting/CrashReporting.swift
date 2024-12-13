@@ -129,7 +129,7 @@ func loadPendingCrashReport(_ data: Data!) throws {
             span.setAttribute(key: "crash.freeDiskSpace", value: customData!["freeDiskSpace"]!)
             span.setAttribute(key: "crash.freeMemory", value: customData!["freeMemory"]!)
         } else {
-            span.setAttribute(key: "crash.rumSessionId", value: String(decoding: report.customData, as: UTF8.self))
+            span.setAttribute(key: "crash.rumSessionId", value: String(bytes: report.customData, encoding: String.Encoding.utf8) ?? "Unknown")
         }
     }
     // "marketing version" here matches up to our use of CFBundleShortVersionString
