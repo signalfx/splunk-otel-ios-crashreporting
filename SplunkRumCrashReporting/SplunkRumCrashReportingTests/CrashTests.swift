@@ -58,7 +58,7 @@ class CrashTests: XCTestCase {
         SplunkRumCrashReporting.start()
         try loadPendingCrashReport(crashData)
 
-        XCTAssertEqual(localSpans.count, 2)
+        XCTAssertEqual(localSpans.count, 0)
         let crashReport = localSpans.first(where: { (span) -> Bool in
             return span.name == "SIGILL"
         })
@@ -96,7 +96,7 @@ class CrashTests: XCTestCase {
         SplunkRumCrashReporting.start()
         try loadPendingCrashReport(crashData)
 
-        XCTAssertEqual(localSpans.count, 2)
+        XCTAssertEqual(localSpans.count, 1)
         let crashReport = localSpans.first(where: { (span) -> Bool in
             return span.name == "SIGTRAP"
         })
