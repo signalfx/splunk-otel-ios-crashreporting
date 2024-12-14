@@ -6,9 +6,12 @@ on:
 
 jobs:
   full-build:
-    runs-on: macOS-latest
+    runs-on: macos-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v1
+      - name: Install Swiftlint
+        run: |
+          brew install swiftlint 
       - name: fullbuild.sh 
         run: ./fullbuild.sh
