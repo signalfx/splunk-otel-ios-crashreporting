@@ -124,7 +124,7 @@ func loadPendingCrashReport(_ data: Data!) throws {
     if report.customData != nil {
         let customData = NSKeyedUnarchiver.unarchiveObject(with: report.customData) as? [String: String]
         if customData != nil {
-            span.setAttribute(key: "crash.rumSessionId", value: customData!["sessionId"]!)
+            span.setAttribute(key: "crash.sessionId", value: customData!["sessionId"]!)
             span.setAttribute(key: "crash.batteryLevel", value: customData!["batteryLevel"]!)
             span.setAttribute(key: "crash.freeDiskSpace", value: customData!["freeDiskSpace"]!)
             span.setAttribute(key: "crash.freeMemory", value: customData!["freeMemory"]!)
