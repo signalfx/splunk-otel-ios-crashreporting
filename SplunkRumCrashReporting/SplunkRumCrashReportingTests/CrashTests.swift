@@ -120,4 +120,59 @@ class CrashTests: XCTestCase {
         XCTAssertEqual(startup!.attributes["component"]?.description, "appstart")
 
     }
+    func testBasics_v3() throws {
+        let crashPath = Bundle(for: CrashTests.self).url(forResource: "sample_v3", withExtension: "plcrash")!
+        let crashData = try Data(contentsOf: crashPath)
+
+        SplunkRumBuilder(beaconUrl: "http://127.0.0.1:8989/v1/traces", rumAuth: "FAKE")
+            .allowInsecureBeacon(enabled: true)
+            .debug(enabled: true)
+            .build()
+        let tracerProvider = TracerProviderBuilder()
+            .add(spanProcessor: SimpleSpanProcessor(spanExporter: TestSpanExporter()))
+            .build()
+        OpenTelemetry.registerTracerProvider(tracerProvider: tracerProvider)
+        localSpans.removeAll()
+
+        SplunkRumCrashReporting.start()
+        try loadPendingCrashReport(crashData)
+
+        XCTAssertEqual(localSpans.count, 2)
+        let crashReport = localSpans.first(where: { (span) -> Bool in
+            return span.name == "SIGTRAP"
+        })
+        let startup = localSpans.first(where: { (span) -> Bool in
+            return span.name == "SplunkRumCrashReporting"
+        })
+
+        XCTAssertNotNil(crashReport)
+        XCTAssertNotEqual(crashReport!.attributes["splunk.rumSessionId"], crashReport!.attributes["crash.rumSessionId"])
+        XCTAssertEqual(crashReport!.attributes["crash.rumSessionId"]?.description, "a9ef9e0a7683eaf973ec8fa4b31df3f9")
+        XCTAssertEqual(crashReport!.attributes["crash.address"]?.description, "6786470812")
+        XCTAssertEqual(crashReport!.attributes["component"]?.description, "crash")
+        XCTAssertEqual(crashReport!.attributes["error"]?.description, "true")
+        XCTAssertEqual(crashReport!.attributes["exception.type"]?.description, "SIGTRAP")
+        XCTAssertTrue(crashReport!.attributes["exception.stacktrace"]?.description.contains("UIKitCore") ?? false)
+        XCTAssertEqual(crashReport!.attributes["crash.batteryLevel"]?.description, "100.0%")
+        XCTAssertEqual(crashReport!.attributes["crash.freeDiskSpace"]?.description, "628.03 GB")
+        XCTAssertEqual(crashReport!.attributes["crash.freeMemory"]?.description, "31.88 GB")
+        XCTAssertEqual(crashReport!.attributes["crash.app.version"]?.description, "1.0")
+        XCTAssertNotNil(crashReport!.attributes["exception.stackFrames"])
+        XCTAssertTrue(crashReport!.attributes["exception.stackFrames"]?.description.contains("threadNumber") ?? false)
+        XCTAssertTrue(crashReport!.attributes["exception.stackFrames"]?.description.contains("crashed") ?? false)
+        XCTAssertTrue(crashReport!.attributes["exception.stackFrames"]?.description.contains("instructionPointer") ?? false)
+        XCTAssertTrue(crashReport!.attributes["exception.stackFrames"]?.description.contains("baseAddress") ?? false)
+        XCTAssertTrue(crashReport!.attributes["exception.stackFrames"]?.description.contains("imageName") ?? false)
+        XCTAssertTrue(crashReport!.attributes["exception.stackFrames"]?.description.contains("offset") ?? false)
+        XCTAssertNotNil(crashReport!.attributes["exception.images"])
+        XCTAssertTrue(crashReport!.attributes["exception.images"]?.description.contains("imageUUID") ?? false)
+        XCTAssertTrue(crashReport!.attributes["exception.images"]?.description.contains("imageSize") ?? false)
+        XCTAssertTrue(crashReport!.attributes["exception.images"]?.description.contains("imagePath") ?? false)
+        XCTAssertTrue(crashReport!.attributes["exception.images"]?.description.contains("codeType") ?? false)
+        XCTAssertTrue(crashReport!.attributes["exception.images"]?.description.contains("baseAddress") ?? false)
+
+        XCTAssertNotNil(startup)
+        XCTAssertEqual(startup!.attributes["component"]?.description, "appstart")
+
+    }
 }
