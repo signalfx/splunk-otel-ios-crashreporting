@@ -24,7 +24,7 @@ let CrashReportingVersionString = "0.6.0"
 
 var TheCrashReporter: PLCrashReporter?
 private var customDataDictionary: [String: String] = [String: String]()
-private var allUsedImageNames: Array <String> = []
+private var allUsedImageNames: [String] = []
 
 func initializeCrashReporting() {
     let startupSpan = buildTracer().spanBuilder(spanName: "SplunkRumCrashReporting").startSpan()
@@ -46,7 +46,7 @@ func initializeCrashReporting() {
     if isDebuggerAttached() {
         startupSpan.setAttribute(key: "error.message", value: "Debugger present. Will not construct PLCrashReporter")
         SplunkRum.debugLog("Debugger present. Will not enable PLCrashReporter")
-        inDebugger = true;
+        inDebugger = true
     }
     if inDebugger == false {
         let success = crashReporter.enable()
@@ -152,20 +152,20 @@ func loadPendingCrashReport(_ data: Data!) throws {
     span.setAttribute(key: "exception.type", value: exceptionType ?? "unknown")
     span.setAttribute(key: "crash.address", value: report.signalInfo.address.description)
 
-    var allThreads: Array <Any> = []
+    var allThreads: [Any] = []
     for case let thread as PLCrashReportThreadInfo in report.threads {
-        
+
         // Original crashed thread handler
-        if (thread.crashed) {
+        if thread.crashed {
             span.setAttribute(key: "exception.stacktrace", value: crashedThreadToStack(report: report, thread: thread))
         }
-        
+
         // Detailed thread handler
         allThreads.append(detailedThreadToStackFrames(report: report, thread: thread))
     }
     let threadPayload = convertArrayToJSONString(allThreads) ?? "Unable to create stack frames"
     span.setAttribute(key: "exception.stackFrames", value: threadPayload)
-    var images: Array <Any> = []
+    var images: [Any] = []
     images = imageList(images: report.images)
     let imagesPayload = convertArrayToJSONString(images) ?? "Unable to create images"
     span.setAttribute(key: "exception.images", value: imagesPayload)
@@ -232,11 +232,11 @@ func formatStackFrame(frame: PLCrashReportStackFrameInfo, frameNum: Int, report:
 // Symbolication Support Code
 
 // Extracts detail for one thread
-func detailedThreadToStackFrames(report: PLCrashReport, thread: PLCrashReportThreadInfo) -> Dictionary<String, Any> {
-    
+func detailedThreadToStackFrames(report: PLCrashReport, thread: PLCrashReportThreadInfo) -> [String: Any] {
+
     var oneThread: [String: Any] = [:]
-    var allStackFrames: Array <Any> = []
-    
+    var allStackFrames: [Any] = []
+
     let threadNum = thread.threadNumber as NSNumber
     oneThread["threadNumber"] = threadNum.stringValue
     oneThread["crashed"] = thread.crashed
@@ -244,11 +244,11 @@ func detailedThreadToStackFrames(report: PLCrashReport, thread: PLCrashReportThr
     var frameNum = 0
     while frameNum < thread.stackFrames.count {
         var oneFrame: [String: Any] = [:]
-        
+
         let frame = thread.stackFrames[frameNum] as! PLCrashReportStackFrameInfo
         let instructionPointer = frame.instructionPointer
         oneFrame["instructionPointer"] = instructionPointer
-        
+
         var baseAddress: UInt64 = 0
         var offset: UInt64 = 0
         var imageName = "???"
@@ -261,7 +261,7 @@ func detailedThreadToStackFrames(report: PLCrashReport, thread: PLCrashReportThr
         }
         oneFrame["imageName"] = imageName
         allUsedImageNames.append(imageName)
-        
+
         if frame.symbolInfo != nil {
             let symbolName = frame.symbolInfo.symbolName
             let symOffset = instructionPointer - frame.symbolInfo.startAddress
@@ -299,22 +299,22 @@ private func isDebuggerAttached() -> Bool {
 }
 
 // Returns array of code images used by app
-func imageList(images: Array<Any>) -> Array<Any> {
-    var outputImages: Array<Any> = []
+func imageList(images: [Any]) -> [Any] {
+    var outputImages: [Any] = []
     for image in images {
-        var imageDictionary: [String:Any] = [:]
+        var imageDictionary: [String: Any] = [:]
         guard let image = image as? PLCrashReportBinaryImageInfo else {
             continue
         }
 
         // Only add the image to the list if it was noted in the stack traces
-        if(allUsedImageNames.contains(image.imageName)) {
+        if allUsedImageNames.contains(image.imageName) {
             imageDictionary["codeType"] = cpuTypeDictionary(cpuType: image.codeType)
             imageDictionary["baseAddress"] = image.imageBaseAddress
             imageDictionary["imageSize"] = image.imageSize
             imageDictionary["imagePath"] = image.imageName
             imageDictionary["imageUUID"] = image.imageUUID
-            
+
             outputImages.append(imageDictionary)
         }
     }
@@ -322,8 +322,8 @@ func imageList(images: Array<Any>) -> Array<Any> {
 }
 
 // Returns formatted cpu data
-func cpuTypeDictionary(cpuType: PLCrashReportProcessorInfo) -> Dictionary<String, String>  {
-    var dictionary: [String:String] = [:]
+func cpuTypeDictionary(cpuType: PLCrashReportProcessorInfo) -> [String: String] {
+    var dictionary: [String: String] = [:]
     dictionary.updateValue(String(cpuType.type), forKey: "cType")
     dictionary.updateValue(String(cpuType.subtype), forKey: "cSubType")
     return dictionary
@@ -332,11 +332,11 @@ func cpuTypeDictionary(cpuType: PLCrashReportProcessorInfo) -> Dictionary<String
 // JSON support code
 func convertDictionaryToJSONString(_ dictionary: [String: Any]) -> String? {
     guard let jsonData = try? JSONSerialization.data(withJSONObject: dictionary, options: .prettyPrinted) else {
-        
+
         return nil
     }
     guard let jsonString = String(data: jsonData, encoding: .utf8) else {
-        
+
         return nil
     }
     return jsonString
@@ -344,11 +344,11 @@ func convertDictionaryToJSONString(_ dictionary: [String: Any]) -> String? {
 
 func convertArrayToJSONString(_ array: [Any]) -> String? {
     guard let jsonData = try? JSONSerialization.data(withJSONObject: array, options: .prettyPrinted) else {
-    
+
         return nil
     }
     guard let jsonString = String(data: jsonData, encoding: .utf8) else {
-        
+
         return nil
     }
     return jsonString
