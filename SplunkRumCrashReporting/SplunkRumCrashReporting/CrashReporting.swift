@@ -234,7 +234,7 @@ func formatStackFrame(frame: PLCrashReportStackFrameInfo, frameNum: Int, report:
 // Extracts detail for one thread
 func detailedThreadToStackFrames(report: PLCrashReport, thread: PLCrashReportThreadInfo) -> Dictionary<String, Any> {
     
-    var oneThread: [String:Any] = [:]
+    var oneThread: [String: Any] = [:]
     var allStackFrames: Array <Any> = []
     
     let threadNum = thread.threadNumber as NSNumber
@@ -243,7 +243,7 @@ func detailedThreadToStackFrames(report: PLCrashReport, thread: PLCrashReportThr
 
     var frameNum = 0
     while frameNum < thread.stackFrames.count {
-        var oneFrame: [String:Any] = [:]
+        var oneFrame: [String: Any] = [:]
         
         let frame = thread.stackFrames[frameNum] as! PLCrashReportStackFrameInfo
         let instructionPointer = frame.instructionPointer
