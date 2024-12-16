@@ -40,7 +40,7 @@ func initializeCrashReporting() {
         return
     }
     let crashReporter = crashReporter_!
-    
+
     // Stop enable if debugger attached
     var inDebugger = false
     if isDebuggerAttached() {
