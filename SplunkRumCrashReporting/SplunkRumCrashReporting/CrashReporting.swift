@@ -149,9 +149,14 @@ func loadPendingCrashReport(_ data: Data!) throws {
     span.setAttribute(key: "crash.app.version", value: report.applicationInfo.applicationMarketingVersion)
     span.setAttribute(key: "error", value: true)
     span.addEvent(name: "crash.timestamp", timestamp: report.systemInfo.timestamp)
+    let formatter = DateFormatter()
+    formatter.dateFormat = "yyyy-MM-dd HH:mm:ss ZZZZZ"
+    span.setAttribute(key: "crash.observedTimestamp", value: formatter.string(from: now))
     span.setAttribute(key: "exception.type", value: exceptionType ?? "unknown")
     span.setAttribute(key: "crash.address", value: report.signalInfo.address.description)
-
+    if report.hasProcessInfo {
+        span.setAttribute(key: "crash.isNative", value: report.processInfo.native)
+    }
     var allThreads: [Any] = []
     for case let thread as PLCrashReportThreadInfo in report.threads {
 
