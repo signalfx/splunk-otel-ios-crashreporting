@@ -169,7 +169,7 @@ func loadPendingCrashReport(_ data: Data!) throws {
         allThreads.append(detailedThreadToStackFrames(report: report, thread: thread))
     }
     let threadPayload = convertArrayToJSONString(allThreads) ?? "Unable to create stack frames"
-    span.setAttribute(key: "exception.stackFrames", value: threadPayload)
+    span.setAttribute(key: "exception.threads", value: threadPayload)
     var images: [Any] = []
     images = imageList(images: report.images)
     let imagesPayload = convertArrayToJSONString(images) ?? "Unable to create images"
