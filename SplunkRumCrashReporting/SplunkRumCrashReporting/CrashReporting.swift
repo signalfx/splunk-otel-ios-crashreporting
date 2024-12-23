@@ -137,12 +137,12 @@ func loadPendingCrashReport(_ data: Data!) throws {
     if report.customData != nil {
         let customData = NSKeyedUnarchiver.unarchiveObject(with: report.customData) as? [String: String]
         if customData != nil {
-            span.setAttribute(key: "crash.rumSessionId", value: customData!["sessionId"]!)
+            span.setAttribute(key: "session.id", value: customData!["sessionId"]!)
             span.setAttribute(key: "crash.batteryLevel", value: customData!["batteryLevel"]!)
             span.setAttribute(key: "crash.freeDiskSpace", value: customData!["freeDiskSpace"]!)
             span.setAttribute(key: "crash.freeMemory", value: customData!["freeMemory"]!)
         } else {
-            span.setAttribute(key: "crash.rumSessionId", value: String(bytes: report.customData, encoding: String.Encoding.utf8) ?? "Unknown")
+            span.setAttribute(key: "session.id", value: String(bytes: report.customData, encoding: String.Encoding.utf8) ?? "Unknown")
         }
     }
     // "marketing version" here matches up to our use of CFBundleShortVersionString
