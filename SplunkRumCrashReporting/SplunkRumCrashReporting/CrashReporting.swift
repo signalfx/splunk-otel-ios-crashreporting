@@ -155,6 +155,7 @@ func loadPendingCrashReport(_ data: Data!) throws {
     span.setAttribute(key: "exception.type", value: exceptionType ?? "unknown")
     span.setAttribute(key: "crash.address", value: report.signalInfo.address.description)
     if report.hasProcessInfo {
+        span.setAttribute(key: "crash.processPath", value: report.processInfo.processPath)
         span.setAttribute(key: "crash.isNative", value: report.processInfo.native)
     }
     var allThreads: [Any] = []
