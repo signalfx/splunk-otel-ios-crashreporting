@@ -243,8 +243,7 @@ func detailedThreadToStackFrames(report: PLCrashReport, thread: PLCrashReportThr
     var oneThread: [String: Any] = [:]
     var allStackFrames: [Any] = []
 
-    let threadNum = thread.threadNumber as NSNumber
-    oneThread["threadNumber"] = threadNum.stringValue
+    oneThread["threadNumber"] = thread.threadNumber
     oneThread["crashed"] = thread.crashed
 
     var frameNum = 0
@@ -315,7 +314,6 @@ func imageList(images: [Any]) -> [Any] {
 
         // Only add the image to the list if it was noted in the stack traces
         if allUsedImageNames.contains(image.imageName) {
-            imageDictionary["codeType"] = cpuTypeDictionary(cpuType: image.codeType)
             imageDictionary["baseAddress"] = image.imageBaseAddress
             imageDictionary["imageSize"] = image.imageSize
             imageDictionary["imagePath"] = image.imageName
