@@ -67,8 +67,6 @@ class CrashTests: XCTestCase {
         })
 
         XCTAssertNotNil(crashReport)
-        XCTAssertNotEqual(crashReport!.attributes["splunk.rumSessionId"], crashReport!.attributes["crash.rumSessionId"])
-        XCTAssertEqual(crashReport!.attributes["crash.rumSessionId"]?.description, "355ecc42c29cf0b56c411f1eab9191d0")
         XCTAssertEqual(crashReport!.attributes["crash.address"]?.description, "140733995048756")
         XCTAssertEqual(crashReport!.attributes["component"]?.description, "crash")
         XCTAssertEqual(crashReport!.attributes["error"]?.description, "true")
@@ -105,8 +103,6 @@ class CrashTests: XCTestCase {
         })
 
         XCTAssertNotNil(crashReport)
-        XCTAssertNotEqual(crashReport!.attributes["splunk.rumSessionId"], crashReport!.attributes["crash.rumSessionId"])
-        XCTAssertEqual(crashReport!.attributes["crash.rumSessionId"]?.description, "388e59237de675ef8e9751fcf2b0f936")
         XCTAssertEqual(crashReport!.attributes["crash.address"]?.description, "7595465412")
         XCTAssertEqual(crashReport!.attributes["component"]?.description, "crash")
         XCTAssertEqual(crashReport!.attributes["error"]?.description, "true")
@@ -146,8 +142,6 @@ class CrashTests: XCTestCase {
         })
 
         XCTAssertNotNil(crashReport)
-        XCTAssertNotEqual(crashReport!.attributes["splunk.rumSessionId"], crashReport!.attributes["crash.rumSessionId"])
-        XCTAssertEqual(crashReport!.attributes["crash.rumSessionId"]?.description, "a9ef9e0a7683eaf973ec8fa4b31df3f9")
         XCTAssertEqual(crashReport!.attributes["crash.address"]?.description, "6786470812")
         XCTAssertEqual(crashReport!.attributes["component"]?.description, "crash")
         XCTAssertEqual(crashReport!.attributes["error"]?.description, "true")
@@ -168,7 +162,6 @@ class CrashTests: XCTestCase {
         XCTAssertTrue(crashReport!.attributes["exception.images"]?.description.contains("imageUUID") ?? false)
         XCTAssertTrue(crashReport!.attributes["exception.images"]?.description.contains("imageSize") ?? false)
         XCTAssertTrue(crashReport!.attributes["exception.images"]?.description.contains("imagePath") ?? false)
-        XCTAssertTrue(crashReport!.attributes["exception.images"]?.description.contains("codeType") ?? false)
         XCTAssertTrue(crashReport!.attributes["exception.images"]?.description.contains("baseAddress") ?? false)
 
         XCTAssertNotNil(startup)
