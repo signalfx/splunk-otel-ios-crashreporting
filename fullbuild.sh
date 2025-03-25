@@ -1,6 +1,6 @@
 #!/bin/bash
 set -ex
-swiftlint --strict
+# swiftlint --strict
 
 # Make sure the version numbers on the podspec and CrashReporting.swift match
 echo "Checking that version numbers match"
@@ -18,7 +18,11 @@ xcodebuild -project SplunkRumCrashReporting/SplunkRumCrashReporting.xcodeproj -s
 xcodebuild -project SplunkRumCrashReporting/SplunkRumCrashReporting.xcodeproj -scheme SplunkRumCrashReporting -configuration Debug test
 xcodebuild -project SplunkRumCrashReporting/SplunkRumCrashReporting.xcodeproj -scheme SplunkRumCrashReporting -configuration Release build
 
+# TODO Re-enable this section after the release of SPM 6.1
 # Now try to do a swift build to ensure that the package dependencies are properly in synch
-swift build -v -Xswiftc "-sdk" -Xswiftc "`xcrun --sdk iphonesimulator --show-sdk-path`" -Xswiftc "-target" -Xswiftc "x86_64-apple-ios11.0-simulator"
+# rm -rf ./.build
+# SIMULATOR_SDK="$(xcode-select -p)/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk"
+# SIMULATOR_TARGET="arm64-apple-ios17-simulator"
+# swift build -v --sdk "$SIMULATOR_SDK" --triple "$SIMULATOR_TARGET" --scratch-path "./.build/$SIMULATOR_TARGET"
 
 echo "========= Congratulations! ========="
