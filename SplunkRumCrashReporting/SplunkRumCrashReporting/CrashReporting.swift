@@ -69,8 +69,6 @@ func initializeCrashReporting() {
     SplunkRum.debugLog("Had a pending crash report")
     do {
         allUsedImageNames.removeAll()
-        let path = crashReporter.crashReportPath()
-        print(path as Any)
         let data = crashReporter.loadPendingCrashReportData()
         try loadPendingCrashReport(data)
     } catch {
