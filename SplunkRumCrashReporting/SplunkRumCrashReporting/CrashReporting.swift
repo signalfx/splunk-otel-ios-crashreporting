@@ -42,13 +42,10 @@ func initializeCrashReporting() {
     let crashReporter = crashReporter_!
 
     // Stop enable if debugger attached
-    var inDebugger = false
     if isDebuggerAttached() {
         startupSpan.setAttribute(key: "error.message", value: "Debugger present. Will not construct PLCrashReporter")
         SplunkRum.debugLog("Debugger present. Will not enable PLCrashReporter")
-        inDebugger = true
-    }
-    if inDebugger == false {
+    } else {
         let success = crashReporter.enable()
         SplunkRum.debugLog("PLCrashReporter enabled: "+success.description)
         if !success {
