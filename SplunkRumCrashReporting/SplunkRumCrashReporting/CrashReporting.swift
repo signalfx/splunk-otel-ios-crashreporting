@@ -255,9 +255,9 @@ func detailedThreadToStackFrames(report: PLCrashReport, thread: PLCrashReportThr
         var imageName = "???"
 
         let imageInfo = report.image(forAddress: instructionPointer)
-        if imageInfo != nil {
-            imageName = imageInfo?.imageName ?? "???"
-            baseAddress = imageInfo!.imageBaseAddress
+        if let imageInfo = report.image(forAddress: instructionPointer) {
+            imageName = imageInfo.imageName ?? "???"
+            baseAddress = imageInfo.imageBaseAddress
             offset = instructionPointer - baseAddress
         }
         oneFrame["imageName"] = imageName
@@ -335,11 +335,7 @@ func convertDictionaryToJSONString(_ dictionary: [String: Any]) -> String? {
 
         return nil
     }
-    guard let jsonString = String(data: jsonData, encoding: .utf8) else {
-
-        return nil
-    }
-    return jsonString
+    return String(data: jsonData, encoding: .utf8)
 }
 
 func convertArrayToJSONString(_ array: [Any]) -> String? {
@@ -347,9 +343,5 @@ func convertArrayToJSONString(_ array: [Any]) -> String? {
 
         return nil
     }
-    guard let jsonString = String(data: jsonData, encoding: .utf8) else {
-
-        return nil
-    }
-    return jsonString
+    return String(data: jsonData, encoding: .utf8)
 }
