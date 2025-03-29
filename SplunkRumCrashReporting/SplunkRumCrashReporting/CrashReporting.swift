@@ -254,7 +254,6 @@ func detailedThreadToStackFrames(report: PLCrashReport, thread: PLCrashReportThr
         var offset: UInt64 = 0
         var imageName = "???"
 
-        let imageInfo = report.image(forAddress: instructionPointer)
         if let imageInfo = report.image(forAddress: instructionPointer) {
             imageName = imageInfo.imageName ?? "???"
             baseAddress = imageInfo.imageBaseAddress
