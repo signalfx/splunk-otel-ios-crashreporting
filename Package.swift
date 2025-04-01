@@ -1,12 +1,12 @@
-// swift-tools-version:5.3
+// swift-tools-version:5.5
 
 import PackageDescription
 
 let package = Package(
     name: "SplunkOtelCrashReporting",
     platforms: [
-        .iOS(.v11),
-	.macOS(.v10_13)
+        .iOS(.v15),
+		.macOS(.v12)
     ],
     products: [
         .library(name: "SplunkOtelCrashReporting", targets: ["SplunkOtelCrashReporting"])
@@ -20,15 +20,15 @@ let package = Package(
             name: "SplunkOtelCrashReporting",
             dependencies: [
                 .product(name: "CrashReporter", package: "PLCrashReporter"),
-		.product(name: "SplunkOtel", package: "SplunkOtel")
+				.product(name: "SplunkOtel", package: "SplunkOtel")
             ],
-	    path: "SplunkRumCrashReporting",
-	    exclude: [ 
-		"SplunkRumCrashReportingTests", 
-		"SplunkRumCrashReporting/SplunkRumCrashReporting.h",
-		"SplunkRumCrashReporting/Info.plist"
-	    ],
-	    sources: [ "SplunkRumCrashReporting" ]
+		    path: "SplunkRumCrashReporting",
+		    exclude: [ 
+				"SplunkRumCrashReportingTests", 
+				"SplunkRumCrashReporting/SplunkRumCrashReporting.h",
+				"SplunkRumCrashReporting/Info.plist"
+	    	],
+	    	sources: [ "SplunkRumCrashReporting" ]
         )
     ]
 )
