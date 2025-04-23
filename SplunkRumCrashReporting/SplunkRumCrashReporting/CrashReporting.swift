@@ -157,11 +157,9 @@ func loadPendingCrashReport(_ data: Data!) throws {
     for case let thread as PLCrashReportThreadInfo in report.threads {
 
         // Original crashed thread handler
-/* Removed by request
         if thread.crashed {
             span.setAttribute(key: "exception.stacktrace", value: crashedThreadToStack(report: report, thread: thread))
         }
-*/
         // Detailed thread handler
         allThreads.append(detailedThreadToStackFrames(report: report, thread: thread))
     }
