@@ -13,8 +13,8 @@ either through the Xcode menu
 `File -> Swift Packages -> Add Package Dependency` or through your `Package.swift`:
 
 ```swift
-.package(url: "https://github.com/signalfx/splunk-otel-ios/", from: "0.4.0");
-.package(url: "https://github.com/signalfx/splunk-otel-ios-crashreporting/", from: "0.4.0");
+.package(url: "https://github.com/signalfx/splunk-otel-ios/", from: "0.13.0");
+.package(url: "https://github.com/signalfx/splunk-otel-ios-crashreporting/", from: "0.7.0");
 ...
 .target(name: "MyAwesomeApp", dependencies: ["SplunkOtel", "SplunkOtelCrashReporting]),
 ```
@@ -27,8 +27,12 @@ SplunkRum library:
 import SplunkOtel
 import SplunkOtelCrashReporting
 ...
-// Your beaconUrl and rumAuth will be provided by your friendly Splunk representative
-SplunkRum.initialize(beaconUrl: "https://rum-ingest.us0.signalfx.com/v1/rum", rumAuth: "ABCD...")
+// Your realm and rum-token will be provided by your friendly Splunk representative
+SplunkRumBuilder(realm: "<realm>", rumAuth: "<rum-token>")
+   .deploymentEnvironment(environment: "<environment>")
+   .setApplicationName("<your_app_name>")
+   .build()
+// Initialize crash reporting module after the iOS agent
 SplunkRumCrashReporting.start()
 ```
 
@@ -38,14 +42,18 @@ or
 @import SplunkOtel;
 @import SplunkOtelCrashReporting;
 ...
-// Your beaconUrl and rumAuth will be provided by your friendly Splunk representative
-[SplunkRum initializeWithBeaconUrl: @"https://rum-ingest.us0.signalfx.com/v1/rum" rumAuth: @"ABCD..." options: nil];
+// Your realm and rum-token will be provided by your friendly Splunk representative
+SplunkRumBuilder *builder = [[SplunkRumBuilder alloc] initWithRealm:@"<realm>"  rumAuth: @"<rum-token>"]];
+[builder deploymentEnvironmentWithEnvironment:@"<environment-name>"];
+[builder setApplicationName:@"<your_app_name>"];
+[builder build];
+// Initialize crash reporting module after the iOS agent
 [SplunkRumCrashReporting start]
 ```
 
 ## Version information
 
-- This library is compatible with iOS 11 and up (and iPadOS 13 and up)
+- This library is compatible with iOS 15 and up (and iPadOS 15 and up)
 
 ## Building and contributing
 

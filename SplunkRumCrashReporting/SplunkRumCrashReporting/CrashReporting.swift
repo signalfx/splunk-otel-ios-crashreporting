@@ -19,8 +19,7 @@ import Foundation
 import CrashReporter
 import SplunkOtel
 
-// Make sure the version numbers on the podspec and CrashReporting.swift match
-let CrashReportingVersionString = "0.6.0"
+let CrashReportingVersionString = "0.7.0"
 
 var TheCrashReporter: PLCrashReporter?
 private var customDataDictionary: [String: String] = [String: String]()
