@@ -1,5 +1,16 @@
 #!/bin/bash
 set -ex
+
+# on arm64 macOS, homebrew is custom build into /opt/homebrew
+PATH=${PATH}:/opt/homebrew/bin/
+
+if which swiftlint >/dev/null; then
+   echo "Swiftlint installation found"
+else
+  echo "warning: SwiftLint not installed, installing via Homebrew"
+  brew install swiftlint
+fi
+
 swiftlint --strict
 
 xcodebuild -project SplunkRumCrashReporting/SplunkRumCrashReporting.xcodeproj -scheme SplunkRumCrashReporting -configuration Debug build
